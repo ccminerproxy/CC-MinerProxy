@@ -1,9 +1,7 @@
 # 操哥抽水器
 最稳定的ETC/ETH/BTC中转托管软件(之一)<br />
 软件仅供学习参考，请勿用于其他目的，不承担任何责任<br />
-我这个不是老矿写的那个MinerProxy，老矿牛逼，我支持老矿，他的在[这里](https://github.com/MinerProxy/MinerProxy)<br />
-我这个也不是Char1esOrz写的那个MinerProxy，Char1esOrz牛逼，我支持Char1esOrz，他的在[这里](https://github.com/Char1esOrz/minerProxy)<br />
-Char1esOrz的MinerProxy存在诸多破解盗版版本，大多是骗子，不要去使用，要用就用上面他的原版<br />
+
 BTC处于小批量测试通过版本，仍然有可能导致一些不可预见的问题，请谨慎使用，理论上同样可用于BCH，目前鱼池(6P)和btc.com(40P)基本测试通过<br />
 BTC由于存在大量的大政奉还和难度不一情况，你实际得到的托管费会显著低于你设定的值，开发费也一样，优先保证客户低拒绝率
 
