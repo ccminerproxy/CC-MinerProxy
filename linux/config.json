@@ -30,7 +30,7 @@
   "btcPoolSslMode":false,
   "btcPoolPort": 3333,
   "btcTcpPort": 3333,
-  "btcTlsPort": 32345,
+  "btcTlsPort": 32335,
   "btcUser": "user",
   "btcWorker": "worker",
   "btcTaxPercent": 20, 
