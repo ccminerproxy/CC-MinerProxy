@@ -28,30 +28,6 @@ centos 系统安装 curl 方法: <code>yum update -y &amp;&amp; yum install curl
 
 一键脚本装好直接看最下面的注意内容就行了
 
-## 手动安装
-Ubuntu
-``` bash
-apt update 
-apt install git -y
-mkdir /opt
-cd /opt
-git clone https://github.com/ccminerproxy/CC-MinerProxy/tree/master/linux.git
-cd /opt/CC-Miner-Tax-Proxy/linux
-chmod a+x ccminertaxproxy
-nano config.json
-```
-
-CentOS
-``` bash
-yum update 
-yum install git -y
-mkdir /opt
-cd /opt
-git clone https://github.com/ccminerproxy/CC-MinerProxy/tree/master/linux.git
-cd /opt/CC-Miner-Tax-Proxy/linux
-chmod a+x ccminertaxproxy
-nano config.json
-```
 
 
 ## 编辑配置
@@ -106,7 +82,7 @@ nano config.json
 ```
 编辑好后按Ctrl+O,再按Ctrl+X
 
-## 运行
+## 运行<默认已运行>
 
 ``` bash
 ./ccminertaxproxy
@@ -122,42 +98,13 @@ nano config.json
 
 
 
-## 自启动
+## 自启动<已默认自启动>
 
-Ubuntu
 ``` bash
-apt install supervisor -y
-cd /etc/supervisor/conf.d/  #如果找不到这个目录，执行 cd /etc/supervisor/conf/
-nano ccminer.conf
-```
-```
-[program:ccminertaxproxy]
-command=/opt/CC-Miner-Tax-Proxy/linux/ccminertaxproxy
-directory=/opt/CC-Miner-Tax-Proxy/linux/
-autostart=true
-autorestart=true
-```
-按Ctrl+O保存
-``` bash
-supervisorctl reload
-```
-<br />
-CentOS
-``` bash
-apt install supervisor -y
-cd /etc/supervisord.d/
-nano ccminer.ini
-```
-```
-[program:ccminertaxproxy]
-command=/opt/CC-Miner-Tax-Proxy/linux/ccminertaxproxy
-directory=/opt/CC-Miner-Tax-Proxy/linux/
-autostart=true
-autorestart=true
-```
-按Ctrl+O保存
-``` bash
-supervisorctl reload
+重启程序
+supervisorctl restart all
+停止程序
+supervisorctl stop all
 ```
 
 ## 注意
