@@ -33,12 +33,11 @@ centos 系统安装 curl 方法: <code>yum update -y &amp;&amp; yum install curl
 
 
 ## 编辑配置
+可编辑config.json文件
 
-自行编辑config.json文件
+安装的时候是id=1的话，默认目录在 /etc/ccworker/ccworker1
 
-安装的时候是id 1的话，默认目录在 /etc/ccworker/ccworker1
-
-以此类推
+以此类推------
 ``` json
 {
   "enableLog":true, //启用日志记录
