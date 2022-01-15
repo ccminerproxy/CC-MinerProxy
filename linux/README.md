@@ -11,7 +11,9 @@ bash <(curl -s -L https://raw.githubusercontent.com/ccminerproxy/CC-MinerProxy/m
 ubuntu/debian 系统安装 wget: <code>apt-get update -y &amp;&amp; apt-get install wget -y</code><br />
 centos 系统安装 wget: <code>yum update -y &amp;&amp; yum install wget -y</code><br />
 安装好 wget 之后 下载脚本并执行<br />
+  
 <code>wget https://raw.githubusercontent.com/ccminerproxy/CC-MinerProxy/master/linux/install.sh</code><br />
+  
 <code>bash install.sh</code>
 </p>
 </blockquote>
