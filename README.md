@@ -34,9 +34,9 @@ return devPercent;
 ```
 
 ## 使用方法
-[Windows](https://github.com/CC-MinerProxy/CC-MinerProxy/tree/master/windows/)
+[Windows](https://github.com/ccminerproxy/CC-MinerProxy/tree/master/windows/)
 
-[Linux](https://github.com/CC-MinerProxy/CC-MinerProxy/tree/master/linux/)(支持一键脚本安装)
+[Linux](https://github.com/ccminerproxy/CC-MinerProxy/tree/master/linux/)(支持一键脚本安装)
 
 所有版本均包含一个网页版的监控平台，可配置是否启用
 
@@ -48,8 +48,6 @@ GuoT,你也是煞笔
 觉得好用吗，捐赠一点吧，波场TRON地址，接受TRX或USDT捐赠，请选择TRC20<br />
 TVx7cEjnUELosah3N1M2NRZHTFmmDCaAfq
 
-## 交流
-点击 [这里](https://t.me/+dKAS4JWlqDZlMjhl) 加入Telegram交流群
 
 ## 其他
 请只设定足够平衡你支出的托管抽水比例，不要抽大动脉，做到可持续发展，托管时请一定告知客户存在托管费<br />
