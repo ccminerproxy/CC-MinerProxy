@@ -4,7 +4,7 @@
 要求：Ubuntu 16+ / Debian 8+ / CentOS 7+ 系统<br />
 使用 root 用户输入下面命令安装或卸载<br />
 ```bash
-bash <(curl -s -L https://github.com/ccminerproxy/CC-MinerProxy/blob/master/linux/install.sh)
+
 ```
 
 
