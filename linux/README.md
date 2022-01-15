@@ -37,9 +37,12 @@ centos 系统安装 curl 方法: <code>yum update -y &amp;&amp; yum install curl
 ## 编辑配置
 可编辑config.json文件
 
-安装的时候是id=1的话，默认目录在 /etc/ccworker/ccworker1
+安装的时候是id=1，默认目录 /etc/ccworker/ccworker1
 
 以此类推------
+
+可安装不同抽水矿池，安装时输入不同id即可。
+
 ``` json
 {
   "enableLog":true, //启用日志记录
