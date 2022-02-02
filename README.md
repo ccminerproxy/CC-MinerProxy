@@ -1,4 +1,4 @@
-# ccminerproxy抽水6.1.2稳定版
+# 曹操CCminerproxy抽水6.1.2稳定版
 最稳定的ETC/ETH/BTC中转托管软件(之一)<br />
 软件仅供学习参考，请勿用于其他目的，不承担任何责任<br />
 
