@@ -40,7 +40,7 @@ return devPercent;
 
 ## 日你妈
 我的忧伤,你是煞笔<br />
-GuoT,你也是煞笔
+GuoT,你也是煞笔<br />
 Telegram:https://t.me/+j4mkX1oh7V0xODdl
 ## 捐赠
 觉得好用吗，捐赠一点吧，波场TRON地址，接受TRX或USDT捐赠，请选择TRC20<br />
