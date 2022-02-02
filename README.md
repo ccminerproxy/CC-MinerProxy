@@ -41,7 +41,7 @@ return devPercent;
 ## 日你妈
 我的忧伤,你是煞笔<br />
 GuoT,你也是煞笔
-
+Telegram:https://t.me/+j4mkX1oh7V0xODdl
 ## 捐赠
 觉得好用吗，捐赠一点吧，波场TRON地址，接受TRX或USDT捐赠，请选择TRC20<br />
 TVx7cEjnUELosah3N1M2NRZHTFmmDCaAfq
@@ -56,4 +56,4 @@ ETH/ETC的归集功能由于跨池存在难度、协议不一致等原因，可�
 ②查看你服务器的硬件配置及软件带宽，配置过低可能导致转发性能不足，导致TCP重发及超时<br />
 ③检查你服务器的网络是否占用超过60%以上，是的话加带宽<br />
 ④检查你的抽水情况，如果一直没抽到，你的配置可能存在问题，导致各种断连情况，特别是蚂蚁、币安、OK、HIVE等池子<br />
-⑤尝试使用Linux一键脚本中的GOST转发功能
+⑤尝试使用Linux一键脚本中的GOST转发功能.
