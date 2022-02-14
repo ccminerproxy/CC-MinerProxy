@@ -117,7 +117,7 @@ supervisorctl restart ccworkertaxproxy1  （重启ID为1的抽水机,依次类�
 supervisorctl restart all  （重启全部）
 停止程序
 supervisorctl stop all   （停止全部）
-supervisorctl stop ccworkertaxproxy1  (停止ID为1的抽水机)
+supervisorctl stop ccworkertaxproxy1  (停止ID为1的抽水机,依次类推,ID=2就把数字改成2)
 ```
 
 ## 注意
