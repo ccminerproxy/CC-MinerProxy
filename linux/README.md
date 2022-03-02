@@ -31,9 +31,13 @@ centos 系统安装 curl 方法: <code>yum update -y &amp;&amp; yum install curl
 输入项一定别填错了，填错了按Ctrl+C重来（推荐使用finalshell工具连接你的linux服务器）
 
 如出现 Supervisor目录没了，安装失败  请依次输入以下代码执行:
+
 sudo rm /var/lib/dpkg/lock-frontend
+
 sudo rm /var/lib/dpkg/lock
+
 sudo rm /var/cache/apt/archives/lock
+
 apt install supervisor -y
 
 最后再执行一键安装脚本。
