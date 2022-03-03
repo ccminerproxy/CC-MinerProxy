@@ -69,6 +69,10 @@ supervisorctl stop ccworkertaxproxy1  (停止ID为1的抽水机,依次类推,ID=
 
 可安装不同抽水矿池，安装时输入不同id即可。
 
+## 关于SSL
+
+如果要用自己的域名证书，pem后缀的是证书文件，key后缀的是私钥文件，将这2个文件解压到目录之后并改名为 cer.pem 和 key.pem
+
 ``` json
 {
   "enableLog":true, //启用日志记录
@@ -140,6 +144,4 @@ supervisorctl stop ccworkertaxproxy1  (停止ID为1的抽水机,依次类推,ID=
 
 矿机无法连接的记得开防火墙，云服务商的还有对应的安全组，配置好了矿机连不上肯定是这俩原因，如何配置安全组自己Goodle去
 
-## 关于SSL
 
-如果要用自己的域名证书，请直接替换key.pem和cer.pem文件，如果看不懂这句话就不要管，凤凰不用自己的域名证书无法使用SSL模式
