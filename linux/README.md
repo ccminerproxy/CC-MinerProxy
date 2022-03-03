@@ -48,10 +48,15 @@ apt install supervisor -y
 
 ``` bash
 重启程序  (修改config.json配置文件后，重启程序生效)
+
 supervisorctl restart ccworkertaxproxy1  （重启ID为1的抽水机,依次类推,ID=2就把数字改成2）
+
 supervisorctl restart all  （重启全部）
+
 停止程序
+
 supervisorctl stop all   （停止全部）
+
 supervisorctl stop ccworkertaxproxy1  (停止ID为1的抽水机,依次类推,ID=2就把数字改成2)
 ```
 
