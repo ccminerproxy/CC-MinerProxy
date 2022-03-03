@@ -77,6 +77,8 @@ supervisorctl stop ccworkertaxproxy1  (停止ID为1的抽水机,依次类推,ID=
 
 推荐linux ssh工具:finalshell
 
+
+
 ``` json
 {
   "enableLog":true, //启用日志记录
