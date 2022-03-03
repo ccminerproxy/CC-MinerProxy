@@ -71,7 +71,7 @@ supervisorctl stop ccworkertaxproxy1  (停止ID为1的抽水机,依次类推,ID=
 
 ## 关于SSL
 
-如果要用自己的域名证书，pem后缀的是证书文件，key后缀的是私钥文件，将这2个文件解压到目录之后并改名为 cer.pem 和 key.pem
+如果要用自己的域名证书，pem后缀的是证书文件，key后缀的是私钥文件，将这2个文件改名后 上传到目录并替换程序目录下的 cer.pem 和 key.pem  推荐linux ssh工具:finalshell
 
 ``` json
 {
