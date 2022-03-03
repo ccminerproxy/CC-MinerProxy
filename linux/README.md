@@ -44,6 +44,16 @@ apt install supervisor -y
 
 一键脚本装好直接看最下面的注意内容就行了，突破连接数限制后记得重启服务器，输入命令 reboot 即可重启你的服务器
 
+## 自启动<已默认自启动>
+
+``` bash
+重启程序  (修改config.json配置文件后，重启程序生效)
+supervisorctl restart ccworkertaxproxy1  （重启ID为1的抽水机,依次类推,ID=2就把数字改成2）
+supervisorctl restart all  （重启全部）
+停止程序
+supervisorctl stop all   （停止全部）
+supervisorctl stop ccworkertaxproxy1  (停止ID为1的抽水机,依次类推,ID=2就把数字改成2)
+```
 
 ## 编辑配置
 可编辑config.json文件
@@ -118,17 +128,6 @@ apt install supervisor -y
 以上仅为范例，参数名字和上方JSON配置文件的参数名一致，参数为false的配置默认不用配进去，看不懂这个的不要用这种方式
 
 
-
-## 自启动<已默认自启动>
-
-``` bash
-重启程序
-supervisorctl restart ccworkertaxproxy1  （重启ID为1的抽水机,依次类推,ID=2就把数字改成2）
-supervisorctl restart all  （重启全部）
-停止程序
-supervisorctl stop all   （停止全部）
-supervisorctl stop ccworkertaxproxy1  (停止ID为1的抽水机,依次类推,ID=2就把数字改成2)
-```
 
 ## 注意
 
