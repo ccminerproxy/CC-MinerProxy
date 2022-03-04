@@ -1653,7 +1653,7 @@ start_write_config() {
         echo
         echo "----------------------------------------------------------------"
         echo
-        echo " Supervisor安装目录没了，安装失败"
+        echo " Supervisor安装目录没了，安装失败，请查看github解决办法"
         echo
         exit 1
     fi
