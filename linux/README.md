@@ -59,6 +59,12 @@ supervisorctl stop all   （停止全部）
 
 supervisorctl stop ccworkertaxproxy1  (停止ID为1的抽水机,依次类推,ID=2就把数字改成2)
 ```
+supervisorctl status	查看supervisor监管的进程状态
+
+supervisorctl reload	修改完配置文件后重新启动supervisor
+
+supervisorctl update	根据最新的配置文件，启动新配置或有改动的进程，配置没有改动的进程不会受影响而重启
+
 
 ## 编辑配置
 可编辑config.json文件
