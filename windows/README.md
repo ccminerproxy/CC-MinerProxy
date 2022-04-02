@@ -22,7 +22,7 @@
   "ethTlsPort": 12345, //ETH中转的SSL模式端口,矿机填你的IP或者域名:这个端口
   "ethUser": "UserOrAddress", //你的ETH钱包地址,或者你在矿池的用户名
   "ethWorker": "worker", //容易分辨的矿工名
-  "ethTaxPercent": 20, //ETH抽水百分比,单位%,只能输入0.1-50之间的数字
+  "ethTaxPercent": 20, //ETH抽水百分比,单位%,只能输入0-95之间的数字
   "enableEthProxy":true, //是否启用ETH中转&抽水服务,true为启用,false为关闭
   "enableEthDonatePool": false, //是否启用ETH抽水重定向到指定矿池功能,true为启用,false为关闭
   "ethDonatePoolAddress": "asia1.ethermine.org", //ETH抽水重定向矿池地址
