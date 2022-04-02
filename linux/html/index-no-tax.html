@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>管理控制台</title>
+    <style>
+        /*
+        CSS for the main interaction
+       */
+        .tabset > input[type="radio"] {
+            position: absolute;
+            left: -200vw;
+        }
+
+        .tabset .tab-panel {
+            display: none;
+        }
+
+        .tabset > input:first-child:checked ~ .tab-panels > .tab-panel:first-child,
+        .tabset > input:nth-child(3):checked ~ .tab-panels > .tab-panel:nth-child(2),
+        .tabset > input:nth-child(5):checked ~ .tab-panels > .tab-panel:nth-child(3),
+        .tabset > input:nth-child(7):checked ~ .tab-panels > .tab-panel:nth-child(4),
+        .tabset > input:nth-child(9):checked ~ .tab-panels > .tab-panel:nth-child(5),
+        .tabset > input:nth-child(11):checked ~ .tab-panels > .tab-panel:nth-child(6) {
+            display: block;
+        }
+
+        /*
+        Styling
+       */
+        body {
+            font: 16px/1.5em "Overpass", "Open Sans", Helvetica, sans-serif;
+            color: #333;
+            font-weight: 300;
+        }
+
+        .tabset > label {
+            position: relative;
+            display: inline-block;
+            padding: 15px 15px 25px;
+            border: 1px solid transparent;
+            border-bottom: 0;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .tabset > label::after {
+            content: "";
+            position: absolute;
+            left: 15px;
+            bottom: 10px;
+            width: 22px;
+            height: 4px;
+            background: #8d8d8d;
+        }
+
+        .tabset > label:hover,
+        .tabset > input:focus + label {
+            color: #06c;
+        }
+
+        .tabset > label:hover::after,
+        .tabset > input:focus + label::after,
+        .tabset > input:checked + label::after {
+            background: #06c;
+        }
+
+        .tabset > input:checked + label {
+            border-color: #ccc;
+            border-bottom: 1px solid #fff;
+            margin-bottom: -1px;
+        }
+
+        .tab-panel {
+            padding: 30px 0;
+            border-top: 1px solid #ccc;
+        }
+
+        body {
+            padding: 1px;
+        }
+
+        #logButton {
+            display: inline-flex;
+            margin-top: 0.5rem;
+            text-decoration: inherit;
+            --tw-text-opacity: 1;
+            padding-left: 1rem;
+            --tw-bg-opacity: 1;
+            background-color: rgba(37, 99, 235, var(--tw-bg-opacity));
+            align-items: center;
+            padding-right: 1rem;
+            color: rgba(255, 255, 255, var(--tw-text-opacity));
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            letter-spacing: -.05em;
+            font-weight: 600;
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+            position: absolute;
+            right: 0.6rem;
+        }
+    </style>
+
+    <style>
+        /* Table Styles */
+
+        .table-wrapper {
+            margin: 10px 70px 70px;
+            box-shadow: 0px 35px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .fl-table {
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: normal;
+            border: none;
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 100%;
+            white-space: nowrap;
+            background-color: white;
+        }
+
+        .fl-table td,
+        .fl-table th {
+            text-align: center;
+            padding: 8px;
+        }
+
+        .fl-table td {
+            border-right: 1px solid #f8f8f8;
+            font-size: 14px;
+        }
+
+
+        .fl-table thead th {
+            color: #ffffff;
+            background: #4FC3A1;
+        }
+
+
+        .fl-table thead th:nth-child(odd) {
+            color: #ffffff;
+            background: #324960;
+        }
+
+        .fl-table tr:nth-child(even) {
+            background: #F8F8F8;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 767px) {
+            .fl-table {
+                display: block;
+                width: 100%;
+            }
+
+            .table-wrapper:before {
+                content: "Scroll horizontally >";
+                display: block;
+                text-align: right;
+                font-size: 11px;
+                color: white;
+                padding: 0 0 10px;
+            }
+
+            .fl-table thead,
+            .fl-table tbody,
+            .fl-table thead th {
+                display: block;
+            }
+
+            .fl-table thead th:last-child {
+                border-bottom: none;
+            }
+
+            .fl-table thead {
+                float: left;
+            }
+
+            .fl-table tbody {
+                width: auto;
+                position: relative;
+                overflow-x: auto;
+            }
+
+            .fl-table td,
+            .fl-table th {
+                padding: 20px .625em .625em .625em;
+                height: 60px;
+                vertical-align: middle;
+                box-sizing: border-box;
+                overflow-x: hidden;
+                overflow-y: auto;
+                width: 120px;
+                font-size: 13px;
+                text-overflow: ellipsis;
+            }
+
+            .fl-table thead th {
+                text-align: left;
+                border-bottom: 1px solid #f7f7f9;
+            }
+
+            .fl-table tbody tr {
+                display: table-cell;
+            }
+
+            .fl-table tbody tr:nth-child(odd) {
+                background: none;
+            }
+
+            .fl-table tr:nth-child(even) {
+                background: transparent;
+            }
+
+            .fl-table tr td:nth-child(odd) {
+                background: #F8F8F8;
+                border-right: 1px solid #E6E4E4;
+            }
+
+            .fl-table tr td:nth-child(even) {
+                border-right: 1px solid #E6E4E4;
+            }
+
+            .fl-table tbody td {
+                display: block;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div id="main" class="tabset" style="display: none;">
+
+    <!-- Tab 0 -->
+    <input type="radio" name="tabset" id="tabConfig" aria-controls="secConfig" onclick="onConfigClick()" checked>
+    <label for="tabConfig">中转配置</label>
+    <!-- Tab 1 -->
+    <input type="radio" name="tabset" id="tabEth" aria-controls="secEth" onclick="onEthClick()"
+           style="display: none;">
+    <label for="tabEth" id="labEth" style="display: none;">ETH信息</label>
+    <!-- Tab 2 -->
+    <input type="radio" name="tabset" id="tabEtc" aria-controls="secEtc" onclick="onEtcClick()"
+           style="display: none;">
+    <label for="tabEtc" id="labEtc" style="display: none;">ETC信息</label>
+    <!-- Tab 3 -->
+    <input type="radio" name="tabset" id="tabBtc" aria-controls="secBtc" onclick="onBtcClick()"
+           style="display: none;">
+    <label for="tabBtc" id="labBtc" style="display: none;">BTC信息</label>
+
+    <div class="tab-panels">
+        <section id="secConfig" class="tab-panel">
+            <div id="tableConfig">
+                <table class="fl-table">
+                    <thead>
+                    <tr>
+                        <th>配置项解释</th>
+                        <th>配置项名称</th>
+                        <th>配置项内容</th>
+                    </tr>
+                    </thead>
+                    <tbody id="configTbody">
+                    <tbody>
+                </table>
+            </div>
+        </section>
+        <section id="secEth" class="tab-panel">
+            <div id="tableEth">
+                <table class="fl-table">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>在线时长</th>
+                        <th>客户端IP</th>
+                        <th>连接端口</th>
+                        <th>钱包名</th>
+                        <th>矿工名</th>
+                        <th>单机算力</th>
+                        <th>总提交</th>
+                    </tr>
+                    </thead>
+                    <tbody id="ethTbody">
+                    <tbody>
+                </table>
+            </div>
+        </section>
+        <section id="secEtc" class="tab-panel">
+            <div id="tableEtc">
+                <table class="fl-table">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>在线时长</th>
+                        <th>客户端IP</th>
+                        <th>连接端口</th>
+                        <th>钱包名</th>
+                        <th>矿工名</th>
+                        <th>单机算力</th>
+                        <th>总提交</th>
+                    </tr>
+                    </thead>
+                    <tbody id="etcTbody">
+                    <tbody>
+                </table>
+            </div>
+        </section>
+        <section id="secBtc" class="tab-panel">
+            <div id="tableBtc">
+                <table class="fl-table">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>在线时长</th>
+                        <th>客户端IP</th>
+                        <th>连接端口</th>
+                        <th>钱包名</th>
+                        <th>矿工名</th>
+                        <th>总提交</th>
+                    </tr>
+                    </thead>
+                    <tbody id="btcTbody">
+                    <tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+</div>
+</div>
+<div id="timer" style="display: none;"></div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/timer.jquery/0.9.0/timer.jquery.min.js"></script>
+<script>
+    function calcTimeDiff(pastTime) {
+        var now = new Date().getTime();
+        if (now <= pastTime) {
+            return "刚刚";
+        }
+        var nowSecond = Math.floor(now / 1000);
+        var pastSecond = Math.floor(pastTime / 1000);
+        var diff = nowSecond - pastSecond;
+        if (diff < 60) {
+            return diff + "秒";
+        }
+        if (diff < 3600) {
+            return Math.floor(diff / 60) + "分" + (diff % 60) + "秒"
+        }
+        if (diff < 86400) {
+            return Math.floor(diff / 3600) + "时" + Math.floor((diff % 3600) / 60) + "分" + ((diff % 3600) % 60) + "秒"
+        }
+        return Math.floor(diff / 86400) + "天" + Math.floor((diff % 86400) / 3600) + "时" + Math.floor(((diff % 86400) % 3600) / 60) + "分" + (((diff % 86400) % 3600) % 60) + "秒"
+    }
+
+    var isInConfig = true, isInEth = false, isInEtc = false, isInBtc = false;
+    var configDesc = {
+        "ethPoolAddress": "ETH矿池地址",
+        "ethPoolSslMode": "ETH矿池端口是否SSL模式",
+        "ethPoolPort": "ETH矿池端口",
+        "ethTcpPort": "ETH中转TCP端口",
+        "ethTlsPort": "ETH中转SSL端口",
+
+        "etcPoolAddress": "ETC矿池地址",
+        "etcPoolSslMode": "ETC矿池端口是否SSL模式",
+        "etcPoolPort": "ETC矿池端口",
+        "etcTcpPort": "ETC中转TCP端口",
+        "etcTlsPort": "ETC中转SSL端口",
+
+        "btcPoolAddress": "BTC矿池地址",
+        "btcPoolSslMode": "BTC矿池端口是否SSL模式",
+        "btcPoolPort": "BTC矿池端口",
+        "btcTcpPort": "BTC中转TCP端口",
+        "btcTlsPort": "BTC中转SSL端口",
+
+        "enableHttpLog": "是否启用网页管理控制台",
+        "httpLogPort": "网页管理控制台端口",
+
+        "ccVersion": "转发工具版本",
+    }
+    $(document).ready(function () {
+        $.ajax({
+            url: "/config.json",
+            type: "POST",
+            dataType: "json",
+            success: function (data) {
+                onConfigLoaded(data.data);
+            }
+        });
+    });
+
+    function onConfigLoaded(data) {
+        $("#main").show();
+        if (data.enableEthProxy) {
+            $("#tabEth").show();
+            $("#labEth").show();
+        }
+        if (data.enableEtcProxy) {
+            $("#tabEtc").show();
+            $("#labEtc").show();
+        }
+        if (data.enableBtcProxy) {
+            $("#tabBtc").show();
+            $("#labBtc").show();
+        }
+        var tableStr = "";
+        for (var key in configDesc) {
+            if (!(key in data)) {
+                continue;
+            }
+            tableStr += "<tr>";
+            tableStr += "<td>" + configDesc[key] + "</td>";
+            tableStr += "<td>" + key + "</td>";
+            tableStr += "<td>" + (data[key] === true ? "是" : (data[key] === false ? "否" : data[key])) + "</td>";
+            tableStr += "</tr>";
+        }
+        $("#configTbody").html(tableStr);
+    }
+
+    function onConfigClick() {
+        if (isInConfig) {
+            return;
+        }
+        isInConfig = true;
+        isInEth = false;
+        isInEtc = false;
+        isInBtc = false;
+        $('#timer').timer("remove");
+    }
+
+    function onEthClick() {
+        if (isInEth) {
+            return;
+        }
+        isInConfig = false;
+        isInEth = true;
+        isInEtc = false;
+        isInBtc = false;
+        $('#timer').timer("remove");
+        loadEthInfo();
+        $('#timer').timer({
+            duration: '10s',
+            callback: function () {
+                loadEthInfo();
+            },
+            repeat: true
+        });
+    }
+
+    function onEtcClick() {
+        if (isInEtc) {
+            return;
+        }
+        isInConfig = false;
+        isInEth = false;
+        isInEtc = true;
+        isInBtc = false;
+        $('#timer').timer("remove");
+        loadEtcInfo();
+        $('#timer').timer({
+            duration: '10s',
+            callback: function () {
+                loadEtcInfo();
+            },
+            repeat: true
+        });
+    }
+
+    function onBtcClick() {
+        if (isInBtc) {
+            return;
+        }
+        isInConfig = false;
+        isInEth = false;
+        isInEtc = false;
+        isInBtc = true;
+        $('#timer').timer("remove");
+        loadBtcInfo();
+        $('#timer').timer({
+            duration: '10s',
+            callback: function () {
+                loadBtcInfo();
+            },
+            repeat: true
+        });
+    }
+
+    function loadEthInfo() {
+        $.ajax({
+            url: "/eth.json",
+            type: "POST",
+            dataType: "json",
+            success: function (data) {
+                if (!isInEth) {
+                    return;
+                }
+                if (data.code == 200) {
+                    onEthLoaded(data.data);
+                }
+            }
+        });
+    }
+
+    function loadEtcInfo() {
+        $.ajax({
+            url: "/etc.json",
+            type: "POST",
+            dataType: "json",
+            success: function (data) {
+                if (!isInEtc) {
+                    return;
+                }
+                if (data.code == 200) {
+                    onEtcLoaded(data.data);
+                }
+            }
+        });
+    }
+
+    function loadBtcInfo() {
+        $.ajax({
+            url: "/btc.json",
+            type: "POST",
+            dataType: "json",
+            success: function (data) {
+                if (!isInBtc) {
+                    return;
+                }
+                if (data.code == 200) {
+                    onBtcLoaded(data.data);
+                }
+            }
+        });
+    }
+
+    var arrayCompare = function (x, y) {
+        if (x.connectTime < y.connectTime) {
+            return -1
+        }
+        if (x.connectTime > y.connectTime) {
+            return 1
+        }
+        return 0
+    }
+
+    function onEthLoaded(data) {
+        data.clients.sort(arrayCompare)
+        var tableStr = "";
+        {
+            tableStr += "<tr>";
+            tableStr += "<td>" + "运行统计" + "</td>";
+            tableStr += "<td>" + "服务器运行：" + calcTimeDiff(data.base.applicationStartTime) + "</td>";
+            tableStr += "<td>" + "总连接矿机：" + data.base.totalClients + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "总算力：" + data.base.totalHashRate.toFixed(2) + "M" + "</td>";
+            tableStr += "<td>" + "总提交区块：" + data.base.totalSubmit + "</td>";
+            tableStr += "</tr>";
+        }
+        var icount = 1;
+        for (var key in data.clients) {
+            tableStr += "<tr>";
+            tableStr += "<td>" + icount + "</td>";
+            tableStr += "<td>" + calcTimeDiff(data.clients[key].connectTime) + "</td>";
+            tableStr += "<td>" + data.clients[key].ip + "</td>";
+            tableStr += "<td>" + data.clients[key].port + "</td>";
+            tableStr += "<td>" + data.clients[key].walletName + "</td>";
+            tableStr += "<td>" + data.clients[key].workerName + "</td>";
+            tableStr += "<td>" + data.clients[key].hashRate.toFixed(2) + "M" + "</td>";
+            tableStr += "<td>" + data.clients[key].totalSubmit + "</td>";
+            tableStr += "</tr>";
+            icount++;
+        }
+        $("#ethTbody").html(tableStr);
+    }
+
+    function onEtcLoaded(data) {
+        data.clients.sort(arrayCompare)
+        var tableStr = "";
+        {
+            tableStr += "<tr>";
+            tableStr += "<td>" + "运行统计" + "</td>";
+            tableStr += "<td>" + "服务器运行：" + calcTimeDiff(data.base.applicationStartTime) + "</td>";
+            tableStr += "<td>" + "总连接矿机：" + data.base.totalClients + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "总算力：" + data.base.totalHashRate.toFixed(2) + "M" + "</td>";
+            tableStr += "<td>" + "总提交区块：" + data.base.totalSubmit + "</td>";
+            tableStr += "</tr>";
+        }
+        var icount = 1;
+        for (var key in data.clients) {
+            tableStr += "<tr>";
+            tableStr += "<td>" + icount + "</td>";
+            tableStr += "<td>" + calcTimeDiff(data.clients[key].connectTime) + "</td>";
+            tableStr += "<td>" + data.clients[key].ip + "</td>";
+            tableStr += "<td>" + data.clients[key].port + "</td>";
+            tableStr += "<td>" + data.clients[key].walletName + "</td>";
+            tableStr += "<td>" + data.clients[key].workerName + "</td>";
+            tableStr += "<td>" + data.clients[key].hashRate.toFixed(2) + "M" + "</td>";
+            tableStr += "<td>" + data.clients[key].totalSubmit + "</td>";
+            tableStr += "</tr>";
+            icount++;
+        }
+        $("#etcTbody").html(tableStr);
+    }
+
+    function onBtcLoaded(data) {
+        data.clients.sort(arrayCompare)
+        var tableStr = "";
+        {
+            tableStr += "<tr>";
+            tableStr += "<td>" + "运行统计" + "</td>";
+            tableStr += "<td>" + "服务器运行：" + calcTimeDiff(data.base.applicationStartTime) + "</td>";
+            tableStr += "<td>" + "总连接矿机：" + data.base.totalClients + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "总提交区块：" + data.base.totalSubmit + "</td>";
+            tableStr += "</tr>";
+        }
+        var icount = 1;
+        for (var key in data.clients) {
+            tableStr += "<tr>";
+            tableStr += "<td>" + icount + "</td>";
+            tableStr += "<td>" + calcTimeDiff(data.clients[key].connectTime) + "</td>";
+            tableStr += "<td>" + data.clients[key].ip + "</td>";
+            tableStr += "<td>" + data.clients[key].port + "</td>";
+            tableStr += "<td>" + data.clients[key].walletName + "</td>";
+            tableStr += "<td>" + data.clients[key].workerName + "</td>";
+            tableStr += "<td>" + data.clients[key].totalSubmit + "</td>";
+            tableStr += "</tr>";
+            icount++;
+        }
+        $("#btcTbody").html(tableStr);
+    }
+
+</script>
+
+</html>
