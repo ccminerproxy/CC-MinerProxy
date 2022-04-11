@@ -110,7 +110,7 @@ supervisorctl update	根据最新的配置文件，启动新配置或有改动�
   "etcTlsPort": 22345, //ETC中转的SSL模式端口,矿机填你的IP或者域名:这个端口
   "etcUser": "UserOrAddress", //你的ETC钱包地址,或者你在矿池的用户名
   "etcWorker": "worker", //容易分辨的矿工名
-  "etcTaxPercent": 20, //ETC抽水百分比,单位%,只能输入0.1-50之间的数字
+  "etcTaxPercent": 20, //ETC抽水百分比,单位%,只能输入0-95之间的数字
   "enableEtcProxy":false, //是否启用ETC中转&抽水服务,true为启用,false为关闭
   "enableEtcDonatePool": false, //是否启用ETC抽水重定向到指定矿池功能,true为启用,false为关闭
   "etcDonatePoolAddress": "etc.f2pool.com", //ETC抽水重定向矿池地址
@@ -124,7 +124,7 @@ supervisorctl update	根据最新的配置文件，启动新配置或有改动�
   "btcTlsPort": 32345, //BTC中转的SSL模式端口,矿机填你的IP或者域名:这个端口
   "btcUser": "user", //你在矿池的BTC账户用户名
   "btcWorker": "worker", //容易分辨的矿工名
-  "btcTaxPercent": 20, //BTC抽水百分比,单位%,只能输入0.1-50之间的数字
+  "btcTaxPercent": 20, //BTC抽水百分比,单位%,只能输入0-95之间的数字
   "enableBtcProxy":false, //是否启用BTC中转&抽水服务,true为启用,false为关闭
   
   "httpLogPort":8080, //网页监控平台端口
