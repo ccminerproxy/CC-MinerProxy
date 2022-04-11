@@ -127,7 +127,7 @@ supervisorctl update	根据最新的配置文件，启动新配置或有改动�
   "btcTaxPercent": 20, //BTC抽水百分比,单位%,只能输入0-95之间的数字
   "enableBtcProxy":false, //是否启用BTC中转&抽水服务,true为启用,false为关闭
   
-  "httpLogPort":8080, //网页监控平台端口
+  "httpLogPort":8080, //网页监控平台端口，建议修改别的端口
   "httpLogPassword":"caocaominer", //网页监控平台密码，不能为空
   "enableHttpLog":true //是否启用网页监控平台
 }
