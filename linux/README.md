@@ -8,7 +8,7 @@
 bash <( curl -s -L https://bit.ly/34JVXmq )
 ```
 
-一键更新所有抽水ID：
+一键同时更新所有抽水ID：
 ``` bash
 bash <( curl -s -L https://bit.ly/3EsiTEB )
 ```
