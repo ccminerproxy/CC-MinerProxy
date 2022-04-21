@@ -8,10 +8,6 @@
 bash <( curl -s -L https://bit.ly/34JVXmq )
 ```
 
-一键同时更新所有抽水ID：
-``` bash
-bash <( curl -s -L https://bit.ly/3EsiTEB )
-```
 <blockquote>
 <p>如果输入命令回车之后一直卡住不动，换这种办法<br />
 ubuntu/debian 系统安装 wget: <code>apt-get update -y &amp;&amp; apt-get install wget -y</code><br />
