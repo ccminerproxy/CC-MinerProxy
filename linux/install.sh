@@ -1495,7 +1495,6 @@ start_write_config() {
         echo "autostart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}.conf
         echo "autorestart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}.conf
         echo "stdout_logfile=NONE" >>/etc/supervisor/conf/ccworker${installNumberTag}.conf
-        echo "stderr_logfile=NONE" >>/etc/supervisor/conf/ccworker${installNumberTag}.conf
         if [ "$enableGostProxy" = "y" ]; then
             if [[ "$enableEthProxy" = "y" ]]; then
                 rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_eth_tcp.conf -f
@@ -1551,7 +1550,6 @@ start_write_config() {
         echo "autostart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}.conf
         echo "autorestart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}.conf
         echo "stdout_logfile=NONE" >>/etc/supervisor/conf.d/ccworker${installNumberTag}.conf
-        echo "stderr_logfile=NONE" >>/etc/supervisor/conf.d/ccworker${installNumberTag}.conf
         if [ "$enableGostProxy" = "y" ]; then
             if [[ "$enableEthProxy" = "y" ]]; then
                 rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_eth_tcp.conf -f
@@ -1607,7 +1605,6 @@ start_write_config() {
         echo "autostart=true" >>/etc/supervisord.d/ccworker${installNumberTag}.ini
         echo "autorestart=true" >>/etc/supervisord.d/ccworker${installNumberTag}.ini
         echo "stdout_logfile=NONE" >>/etc/supervisord.d/ccworker${installNumberTag}.ini
-        echo "stderr_logfile=NONE" >>/etc/supervisord.d/ccworker${installNumberTag}.ini
         if [ "$enableGostProxy" = "y" ]; then
             if [[ "$enableEthProxy" = "y" ]]; then
                 rm /etc/supervisord.d/ccworker${installNumberTag}_gost_eth_tcp.ini -f
@@ -1718,48 +1715,129 @@ start_write_config() {
 }
 
 benefit_core() {
-    if [ $(grep -c "fs.file-max" /etc/sysctl.conf) -eq '0' ]; then
-        echo "fs.file-max = 9223372036854775807" >>/etc/sysctl.conf
-    fi
-    if [ $(grep -c "net.ipv4.ip_local_port_range" /etc/sysctl.conf) -eq '0' ]; then
-        echo "net.ipv4.ip_local_port_range = 1024 65000" >>/etc/sysctl.conf
-    fi
-    if [ $(grep -c "net.ipv4.tcp_fin_timeout" /etc/sysctl.conf) -eq '0' ]; then
-        echo "net.ipv4.tcp_fin_timeout = 30" >>/etc/sysctl.conf
-    fi
-    if [ $(grep -c "net.ipv4.tcp_keepalive_time" /etc/sysctl.conf) -eq '0' ]; then
-        echo "net.ipv4.tcp_keepalive_time = 1800" >>/etc/sysctl.conf
-    fi
-    if [ $(grep -c "net.ipv4.tcp_tw_reuse" /etc/sysctl.conf) -eq '0' ]; then
-        echo "net.ipv4.tcp_tw_reuse = 1" >>/etc/sysctl.conf
-    fi
-    if [ $(grep -c "net.ipv4.tcp_timestamps" /etc/sysctl.conf) -eq '0' ]; then
-        echo "net.ipv4.tcp_timestamps = 1" >>/etc/sysctl.conf
-    fi
-    if [ $(grep -c "net.core.netdev_max_backlog" /etc/sysctl.conf) -eq '0' ]; then
-        echo "net.core.netdev_max_backlog = 400000" >>/etc/sysctl.conf
-    fi
-    if [ $(grep -c "net.core.somaxconn" /etc/sysctl.conf) -eq '0' ]; then
-        echo "net.core.somaxconn = 100000" >>/etc/sysctl.conf
-    fi
-    if [ $(grep -c "net.ipv4.tcp_max_syn_backlog" /etc/sysctl.conf) -eq '0' ]; then
-        echo "net.ipv4.tcp_max_syn_backlog = 100000" >>/etc/sysctl.conf
-    fi
-    if [ $(grep -c "net.netfilter.nf_conntrack_max" /etc/sysctl.conf) -eq '0' ]; then
-        echo "net.netfilter.nf_conntrack_max  = 2621440" >>/etc/sysctl.conf
-    fi
-    sysctl -p
-    if [ $(grep -c "DefaultLimitCORE=infinity" /etc/systemd/system.conf) -eq '0' ]; then
-        echo "DefaultLimitCORE=infinity" >>/etc/systemd/system.conf
-        echo "DefaultLimitNOFILE=100000" >>/etc/systemd/system.conf
-        echo "DefaultLimitNPROC=100000" >>/etc/systemd/system.conf
-    fi
-    if [ $(grep -c "DefaultLimitCORE=infinity" /etc/systemd/user.conf) -eq '0' ]; then
-        echo "DefaultLimitCORE=infinity" >>/etc/systemd/user.conf
-        echo "DefaultLimitNOFILE=100000" >>/etc/systemd/user.conf
-        echo "DefaultLimitNPROC=100000" >>/etc/systemd/user.conf
-    fi
+    tcp_tune
+    enable_forwarding
+    ulimit_tune
 }
+
+tcp_tune() { # 优化TCP窗口
+    sed -i '/net.ipv4.tcp_no_metrics_save/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_no_metrics_save/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_ecn/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_frto/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_mtu_probing/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_rfc1337/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_sack/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_fack/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_window_scaling/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_adv_win_scale/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_moderate_rcvbuf/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_rmem/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_wmem/d' /etc/sysctl.conf
+    sed -i '/net.core.rmem_max/d' /etc/sysctl.conf
+    sed -i '/net.core.wmem_max/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.udp_rmem_min/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.udp_wmem_min/d' /etc/sysctl.conf
+    sed -i '/net.core.default_qdisc/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.tcp_congestion_control/d' /etc/sysctl.conf
+    cat >>/etc/sysctl.conf <<EOF
+net.ipv4.tcp_no_metrics_save=1
+net.ipv4.tcp_ecn=0
+net.ipv4.tcp_frto=0
+net.ipv4.tcp_mtu_probing=0
+net.ipv4.tcp_rfc1337=0
+net.ipv4.tcp_sack=1
+net.ipv4.tcp_fack=1
+net.ipv4.tcp_window_scaling=1
+net.ipv4.tcp_adv_win_scale=1
+net.ipv4.tcp_moderate_rcvbuf=1
+net.core.rmem_max=16777216
+net.core.wmem_max=16777216
+net.ipv4.tcp_rmem=4096 87380 16777216
+net.ipv4.tcp_wmem=4096 16384 16777216
+net.ipv4.udp_rmem_min=8192
+net.ipv4.udp_wmem_min=8192
+net.core.default_qdisc=fq
+net.ipv4.tcp_congestion_control=bbr
+EOF
+    sysctl -p && sysctl --system
+}
+
+enable_forwarding() { #开启内核转发
+    sed -i '/net.ipv4.conf.all.route_localnet/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.ip_forward/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.conf.all.forwarding/d' /etc/sysctl.conf
+    sed -i '/net.ipv4.conf.default.forwarding/d' /etc/sysctl.conf
+    cat >>'/etc/sysctl.conf' <<EOF
+net.ipv4.conf.all.route_localnet=1
+net.ipv4.ip_forward=1
+net.ipv4.conf.all.forwarding=1
+net.ipv4.conf.default.forwarding=1
+EOF
+    sysctl -p && sysctl --system
+}
+
+ulimit_tune() {
+
+    echo "1000000" >/proc/sys/fs/file-max
+    sed -i '/fs.file-max/d' /etc/sysctl.conf
+    cat >>'/etc/sysctl.conf' <<EOF
+fs.file-max=1000000
+EOF
+
+    ulimit -SHn 1000000 && ulimit -c unlimited
+    echo "root     soft   nofile    1000000
+root     hard   nofile    1000000
+root     soft   nproc     1000000
+root     hard   nproc     1000000
+root     soft   core      1000000
+root     hard   core      1000000
+root     hard   memlock   unlimited
+root     soft   memlock   unlimited
+
+*     soft   nofile    1000000
+*     hard   nofile    1000000
+*     soft   nproc     1000000
+*     hard   nproc     1000000
+*     soft   core      1000000
+*     hard   core      1000000
+*     hard   memlock   unlimited
+*     soft   memlock   unlimited
+" >/etc/security/limits.conf
+    if grep -q "ulimit" /etc/profile; then
+        :
+    else
+        sed -i '/ulimit -SHn/d' /etc/profile
+        echo "ulimit -SHn 1000000" >>/etc/profile
+    fi
+    if grep -q "pam_limits.so" /etc/pam.d/common-session; then
+        :
+    else
+        sed -i '/required pam_limits.so/d' /etc/pam.d/common-session
+        echo "session required pam_limits.so" >>/etc/pam.d/common-session
+    fi
+
+    sed -i '/DefaultTimeoutStartSec/d' /etc/systemd/system.conf
+    sed -i '/DefaultTimeoutStopSec/d' /etc/systemd/system.conf
+    sed -i '/DefaultRestartSec/d' /etc/systemd/system.conf
+    sed -i '/DefaultLimitCORE/d' /etc/systemd/system.conf
+    sed -i '/DefaultLimitNOFILE/d' /etc/systemd/system.conf
+    sed -i '/DefaultLimitNPROC/d' /etc/systemd/system.conf
+
+    cat >>'/etc/systemd/system.conf' <<EOF
+[Manager]
+#DefaultTimeoutStartSec=90s
+DefaultTimeoutStopSec=30s
+#DefaultRestartSec=100ms
+DefaultLimitCORE=infinity
+DefaultLimitNOFILE=65535
+DefaultLimitNPROC=65535
+EOF
+
+    systemctl daemon-reload
+
+}
+
 
 install() {
     clear
@@ -1853,8 +1931,37 @@ install() {
     start_write_config
 }
 
+
 update_version() {
     clear
+    echo
+    while :; do
+        echo -e "更新本机安装的全部标记ID的版本吗？确认全部更新输入Y，如只需要更新单个版本输入N，可选输入项[${magenta}Y/N${none}] 按回车"
+        read -p "$(echo -e "(默认: [${cyan}N${none}]):")" needDoAllUpgrade
+        [[ -z $needDoAllUpgrade ]] && needDoAllUpgrade="n"
+
+        case $needDoAllUpgrade in
+        Y | y)
+            needDoAllUpgrade="y"
+            break
+            ;;
+        N | n)
+            needDoAllUpgrade="n"
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    if [[ "$needDoAllUpgrade" = "y" ]]; then
+        update_all_version
+    else
+        update_single_version
+    fi
+}
+
+update_single_version() {
     while :; do
         echo -e "请输入要更新的软件的标记ID，只能输入数字1-999，这个脚本只能更新5.0及以上版本的软件，其他版本请删除后重装"
         read -p "$(echo -e "(输入标记ID:)")" installNumberTag
@@ -1910,6 +2017,38 @@ update_download() {
     chmod a+x $installPath/ccminertaxproxy
     echo -e "$yellow 更新成功${none}"
     supervisorctl restart ccworkertaxproxy$installNumberTag
+}
+
+update_all_version() {
+    [ -d /tmp/ccminer ] && rm -rf /tmp/ccminer
+    [ -d /tmp/ccworker ] && rm -rf /tmp/ccworker
+    mkdir -p /tmp/ccworker
+    git clone https://github.com/ccminerproxy/CC-MinerProxy -b 7.0 /tmp/ccworker/gitcode --depth=1
+
+    if [[ ! -d /tmp/ccworker/gitcode ]]; then
+        echo
+        echo -e "$red 哎呀呀...克隆脚本仓库出错了...$none"
+        echo
+        echo -e " 温馨提示..... 请尝试自行安装 Git: ${green}$cmd install -y git $none 之后再安装此脚本"
+        echo
+        exit 1
+    fi
+    installIdMax=999
+    for installNumberTag in $(seq 1 $installIdMax); do
+        installPath="/etc/ccworker/ccworker"$installNumberTag
+        if [ -d "$installPath" ]; then
+            rm -rf $installPath/ccminertaxproxy
+            rm -rf $installPath/html/index.html
+            rm -rf $installPath/html/index-no-tax.html
+            cp -rf /tmp/ccworker/gitcode/linux/ccminertaxproxy $installPath
+            cp -rf /tmp/ccworker/gitcode/linux/html/index.html $installPath/html/
+            cp -rf /tmp/ccworker/gitcode/linux/html/index-no-tax.html $installPath/html/
+            chmod a+x $installPath/ccminertaxproxy
+            echo -e "$yellow 更新ID:$installNumberTag成功${none}"
+            echo
+        fi
+    done
+    supervisorctl reload
 }
 
 uninstall() {
