@@ -2,12 +2,11 @@
 好处：适合又想要Linux稳定性的，又不懂Linux的小白的学习者<br />
 功能：包含自启动和进程守护，重启后可以自动运行，会放开防火墙和连接数限制，一键搞定<br />
 要求：Ubuntu 16+ / Debian 8+ / CentOS 7+ 系统<br />
-建议使用 Ubuntu20.04操作系统，Centos已停止更新.<br />
+建议使用 Ubuntu20.04操作系统.<br />
 使用 root 用户输入下面命令安装或卸载<br />
 ``` bash
 bash <( curl -s -L https://bit.ly/34JVXmq )
 ```
-
 <blockquote>
 <p>如果输入命令回车之后一直卡住不动，换这种办法<br />
 ubuntu/debian 系统安装 wget: <code>apt-get update -y &amp;&amp; apt-get install wget -y</code><br />
@@ -68,7 +67,6 @@ supervisorctl update	根据最新的配置文件，启动新配置或有改动�
 ```
 
 ## 编辑配置
-
 可编辑config.json文件
 
 安装的时候是id=1，默认目录 /etc/ccworker/ccworker1

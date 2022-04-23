@@ -1670,7 +1670,7 @@ write_json() {
         fi
     fi
 
-    echo "  \"version\": \"8.0.4\"" >>$jsonPath
+    echo "  \"version\": \"8.0.5\"" >>$jsonPath
     echo "}" >>$jsonPath
     if [[ $cmd == "apt-get" ]]; then
         ufw reload
@@ -2290,7 +2290,6 @@ uninstall() {
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_btc_tls.ini -f
         fi
         supervisorctl update
-        supervisorctl restart ccworkertaxproxy$installNumberTag
     fi
 
     if [ -d "$installPath" ]; then
@@ -2343,7 +2342,7 @@ uninstall() {
 clear
 while :; do
     echo
-    echo "....... CaoCaoMinerTaxProxy 8.0.4版 防DDos CC 极致优化版<双钱包> 一键安装脚本 & 管理脚本 by 曹操 ......."
+    echo "....... CaoCaoMinerTaxProxy 8.0.5版 防DDos CC 极致优化版<双钱包> 一键安装脚本 & 管理脚本 by 曹操 ......."
     echo
     echo " 1. 安装"
     echo
