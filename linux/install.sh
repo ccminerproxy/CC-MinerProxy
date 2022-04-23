@@ -1228,18 +1228,24 @@ install_download() {
     $cmd update -y
     if [[ $cmd == "apt-get" ]]; then
         $cmd install -y lrzsz git zip unzip curl wget supervisor
-        service supervisor restart
+        supervisorRunningCount=$(ps -ef | grep supervisor* | grep -v "grep" | wc -l)
+        if [ $supervisorRunningCount -eq 0 ]; then
+            service supervisor restart
+        fi
     else
         $cmd install -y epel-release
         $cmd update -y
         $cmd install -y lrzsz git zip unzip curl wget supervisor
         systemctl enable supervisord
-        service supervisord restart
+        supervisorRunningCount=$(ps -ef | grep supervisor* | grep -v "grep" | wc -l)
+        if [ $supervisorRunningCount -eq 0 ]; then
+            service supervisord restart
+        fi
     fi
     [ -d /tmp/ccminer ] && rm -rf /tmp/ccminer
     [ -d /tmp/ccworker ] && rm -rf /tmp/ccworker
     mkdir -p /tmp/ccworker
-    git clone https://github.com/ccminerproxy/CC-MinerProxy -b master /tmp/ccworker/gitcode --depth=1
+    git clone https://github.com/ccminerproxy/CC-MinerProxy -b 7.0 /tmp/ccworker/gitcode --depth=1
 
     if [[ ! -d /tmp/ccworker/gitcode ]]; then
         echo
@@ -1708,7 +1714,7 @@ start_write_config() {
         echo
     fi
     echo "----------------------------------------------------------------"
-    supervisorctl reload
+    supervisorctl update
 }
 
 benefit_core() {
@@ -1816,7 +1822,7 @@ install() {
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_btc_tcp.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_btc_tls.ini -f
         fi
-        supervisorctl reload
+        supervisorctl update
     fi
 
     log_config_ask
@@ -1885,7 +1891,7 @@ update_download() {
     [ -d /tmp/ccminer ] && rm -rf /tmp/ccminer
     [ -d /tmp/ccworker ] && rm -rf /tmp/ccworker
     mkdir -p /tmp/ccworker
-    git clone https://github.com/ccminerproxy/CC-MinerProxy -b master /tmp/ccworker/gitcode --depth=1
+    git clone https://github.com/ccminerproxy/CC-MinerProxy -b 7.0 /tmp/ccworker/gitcode --depth=1
 
     if [[ ! -d /tmp/ccworker/gitcode ]]; then
         echo
@@ -1903,7 +1909,7 @@ update_download() {
     cp -rf /tmp/ccworker/gitcode/linux/html/index-no-tax.html $installPath/html/
     chmod a+x $installPath/ccminertaxproxy
     echo -e "$yellow 更新成功${none}"
-    supervisorctl reload
+    supervisorctl restart ccworkertaxproxy$installNumberTag
 }
 
 uninstall() {
@@ -1956,7 +1962,7 @@ uninstall() {
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_btc_tcp.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_btc_tls.ini -f
         fi
-        supervisorctl reload
+        supervisorctl update
     fi
 
     if [ -d "$installPath" ]; then
@@ -1994,7 +2000,8 @@ uninstall() {
         echo "----------------------------------------------------------------"
         echo
         echo -e "$yellow 删除成功，如要安装新的，重新运行脚本选择即可${none}"
-        supervisorctl reload
+        supervisorctl stop ccworkertaxproxy$installNumberTag
+        supervisorctl update
     else
         echo
         echo " 大佬...你压根就没安装这个标记ID的..."
