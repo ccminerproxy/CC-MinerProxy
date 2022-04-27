@@ -66,7 +66,7 @@ supervisorctl reload	修改完配置文件后重新启动supervisor
 supervisorctl update	根据最新的配置文件，启动新配置或有改动的进程，配置没有改动的进程不会受影响而重启
 ```
 
-## 编辑配置
+## 修改比例等配置参数
 可编辑config.json文件
 
 安装的时候是id=1，默认目录 /etc/ccworker/ccworker1
