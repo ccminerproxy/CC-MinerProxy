@@ -313,10 +313,14 @@ eth_miner_config() {
         case $enableEthSecondConfig in
         Y | y)
             enableEthSecondConfig="y"
+            echo
+            echo
             break
             ;;
         N | n)
             enableEthSecondConfig="n"
+            echo
+            echo
             break
             ;;
         *)
@@ -698,10 +702,14 @@ etc_miner_config() {
         case $enableEtcSecondConfig in
         Y | y)
             enableEtcSecondConfig="y"
+            echo
+            echo
             break
             ;;
         N | n)
             enableEtcSecondConfig="n"
+            echo
+            echo
             break
             ;;
         *)
@@ -1083,10 +1091,14 @@ btc_miner_config() {
         case $enableBtcSecondConfig in
         Y | y)
             enableBtcSecondConfig="y"
+            echo
+            echo
             break
             ;;
         N | n)
             enableBtcSecondConfig="n"
+            echo
+            echo
             break
             ;;
         *)
@@ -1120,7 +1132,288 @@ btc_miner_config() {
             0 | 0\.[0-9] | 0\.[0-9][0-9]* | [1-9] | [1-8][0-9] | [1-9]\.[0-9]* | [1-8][0-9]\.[0-9]* | 9[0-5] | 9[0-4]\.[0-9]*)
                 echo
                 echo
-                echo -e "$yellow ETH抽水比例 = $cyan$btcSecondTaxPercent%$none"
+                echo -e "$yellow BTC抽水比例 = $cyan$btcSecondTaxPercent%$none"
+                echo "----------------------------------------------------------------"
+                echo
+                break
+                ;;
+            *)
+                echo
+                echo " ..输入的抽水比例要在0-95之间，如果用的是整数不要加小数点....."
+                error
+                ;;
+            esac
+        done
+    fi
+}
+
+
+rvn_miner_config_ask() {
+    echo
+    while :; do
+        echo -e "是否开启 RVN抽水中转， 输入 [${magenta}Y或者N${none}] 按回车"
+        read -p "$(echo -e "(默认: [${cyan}N${none}]):")" enableRvnProxy
+        [[ -z $enableRvnProxy ]] && enableRvnProxy="n"
+
+        case $enableRvnProxy in
+        Y | y)
+            enableRvnProxy="y"
+            rvn_miner_config
+            break
+            ;;
+        N | n)
+            enableRvnProxy="n"
+            echo
+            echo
+            echo -e "$yellow 不启用RVN抽水中转 $none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+}
+
+rvn_miner_config() {
+    echo
+    while :; do
+        echo -e "请输入RVN矿池域名，例如 raven.f2pool.com，不需要输入矿池端口"
+        read -p "$(echo -e "(默认: [${cyan}raven.f2pool.com${none}]):")" rvnPoolAddress
+        [[ -z $rvnPoolAddress ]] && rvnPoolAddress="raven.f2pool.com"
+
+        case $rvnPoolAddress in
+        *[:$]*)
+            echo
+            echo -e " 由于这个脚本太辣鸡了..所以矿池地址不能包含端口.... "
+            echo
+            error
+            ;;
+        *)
+            echo
+            echo
+            echo -e "$yellow RVN矿池地址 = ${cyan}$rvnPoolAddress${none}"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        esac
+    done
+    while :; do
+        echo -e "是否使用SSL模式连接到RVN矿池， 输入 [${magenta}Y/N${none}] 按回车"
+        read -p "$(echo -e "(默认: [${cyan}N${none}]):")" rvnPoolSslMode
+        [[ -z $rvnPoolSslMode ]] && rvnPoolSslMode="n"
+
+        case $rvnPoolSslMode in
+        Y | y)
+            rvnPoolSslMode="y"
+            echo
+            echo
+            echo -e "$yellow 使用SSL模式连接到RVN矿池 $none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        N | n)
+            rvnPoolSslMode="n"
+            echo
+            echo
+            echo -e "$yellow 使用TCP模式连接到RVN矿池 $none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    while :; do
+        if [[ "$rvnPoolSslMode" = "y" ]]; then
+            echo -e "请输入RVN矿池"$yellow"$rvnPoolAddress"$none"的SSL端口，不要使用矿池的TCP端口！！！"
+        else
+            echo -e "请输入RVN矿池"$yellow"$rvnPoolAddress"$none"的TCP端口，不要使用矿池的SSL端口！！！"
+        fi
+        read -p "$(echo -e "(默认端口: ${cyan}3636${none}):")" rvnPoolPort
+        [ -z "$rvnPoolPort" ] && rvnPoolPort=3636
+        case $rvnPoolPort in
+        [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
+            echo
+            echo
+            echo -e "$yellow RVN矿池端口 = $cyan$rvnPoolPort$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            echo
+            echo " ..端口要在1-65535之间啊哥哥....."
+            error
+            ;;
+        esac
+    done
+    local randomTcp="3636"
+    while :; do
+        echo -e "请输入RVN本地TCP中转的端口 ["$magenta"1-65535"$none"]，不能选择 "$magenta"80"$none" 或 "$magenta"443"$none" 端口"
+        read -p "$(echo -e "(默认TCP端口: ${cyan}${randomTcp}${none}):")" rvnTcpPort
+        [ -z "$rvnTcpPort" ] && rvnTcpPort=$randomTcp
+        case $rvnTcpPort in
+        80)
+            echo
+            echo " ...都说了不能选择 80 端口了咯....."
+            error
+            ;;
+        443)
+            echo
+            echo " ..都说了不能选择 443 端口了咯....."
+            error
+            ;;
+        [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
+            echo
+            echo
+            echo -e "$yellow RVN本地TCP中转端口 = $cyan$rvnTcpPort$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    local randomTls="42345"
+    while :; do
+        echo -e "请输入RVN本地SSL中转的端口 ["$magenta"1-65535"$none"]，不能选择 "$magenta"80"$none" 或 "$magenta"443"$none" 或 "$magenta"$rvnTcpPort"$none" 端口"
+        read -p "$(echo -e "(默认端口: ${cyan}${randomTls}${none}):")" rvnTlsPort
+        [ -z "$rvnTlsPort" ] && rvnTlsPort=$randomTls
+        case $rvnTlsPort in
+        80)
+            echo
+            echo " ...都说了不能选择 80 端口了咯....."
+            error
+            ;;
+        443)
+            echo
+            echo " ..都说了不能选择 443 端口了咯....."
+            error
+            ;;
+        $rvnTcpPort)
+            echo
+            echo " ..不能和 TCP端口 $rvnTcpPort 一毛一样....."
+            error
+            ;;
+        [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
+            echo
+            echo
+            echo -e "$yellow RVN本地SSL中转端口 = $cyan$rvnTlsPort$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    while :; do
+        echo -e "请输入你在矿池的RVN账户用户名"
+        read -p "$(echo -e "(一定不要输入错误，错了就抽给别人了):")" rvnUser
+        if [ -z "$rvnUser" ]; then
+            echo
+            echo
+            echo " ..一定要输入一个用户名啊....."
+        else
+            echo
+            echo
+            echo -e "$yellow RVN抽水用户名 = $cyan$rvnUser$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+        fi
+    done
+    while :; do
+        echo -e "请输入你喜欢的矿工名，抽水成功后你可以在矿池看到这个矿工名"
+        read -p "$(echo -e "(默认: [${cyan}worker${none}]):")" rvnWorker
+        [[ -z $rvnWorker ]] && rvnWorker="worker"
+        echo
+        echo
+        echo -e "$yellow RVN抽水矿工名 = ${cyan}$rvnWorker${none}"
+        echo "----------------------------------------------------------------"
+        echo
+        break
+    done
+    while :; do
+        echo -e "请输入RVN抽水比例 ["$magenta"0-95"$none"]"
+        read -p "$(echo -e "(默认: ${cyan}10${none}):")" rvnTaxPercent
+        [ -z "$rvnTaxPercent" ] && rvnTaxPercent=10
+        case $rvnTaxPercent in
+        0 | 0\.[0-9] | 0\.[0-9][0-9]* | [1-9] | [1-8][0-9] | [1-9]\.[0-9]* | [1-8][0-9]\.[0-9]* | 9[0-5] | 9[0-4]\.[0-9]*)
+            echo
+            echo
+            echo -e "$yellow RVN抽水比例 = $cyan$rvnTaxPercent%$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            echo
+            echo " ..输入的抽水比例要在0-95之间，如果用的是整数不要加小数点....."
+            error
+            ;;
+        esac
+    done
+    while :; do
+        echo -e "是否添加第二个抽水账户 输入 [${magenta}Y/N${none}] 按回车"
+        read -p "$(echo -e "(默认: [${cyan}N${none}]):")" enableRvnSecondConfig
+        [[ -z $enableRvnSecondConfig ]] && enableRvnSecondConfig="n"
+
+        case $enableRvnSecondConfig in
+        Y | y)
+            enableRvnSecondConfig="y"
+            echo
+            echo
+            break
+            ;;
+        N | n)
+            enableRvnSecondConfig="n"
+            echo
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    if [[ "$enableRvnSecondConfig" = "y" ]]; then
+        while :; do
+            echo -e "请输入你的第二个RVN钱包地址或者你在矿池的用户名"
+            read -p "$(echo -e "(一定不要输入错误，错了就抽给别人了):")" rvnSecondUser
+            if [ -z "$rvnSecondUser" ]; then
+                echo
+                echo
+                echo " ..一定要输入一个钱包地址或者用户名啊....."
+                echo
+            else
+                echo
+                echo
+                echo -e "$yellow RVN第二个抽水用户名/钱包名 = $cyan$rvnSecondUser$none"
+                echo "----------------------------------------------------------------"
+                echo
+                break
+            fi
+        done
+        while :; do
+            echo -e "请输入第二个抽水账户的RVN抽水比例 ["$magenta"0-95"$none"]"
+            read -p "$(echo -e "(默认: ${cyan}10${none}):")" rvnSecondTaxPercent
+            [ -z "$rvnSecondTaxPercent" ] && rvnSecondTaxPercent=10
+            case $rvnSecondTaxPercent in
+            0 | 0\.[0-9] | 0\.[0-9][0-9]* | [1-9] | [1-8][0-9] | [1-9]\.[0-9]* | [1-8][0-9]\.[0-9]* | 9[0-5] | 9[0-4]\.[0-9]*)
+                echo
+                echo
+                echo -e "$yellow RVN抽水比例 = $cyan$rvnSecondTaxPercent%$none"
                 echo "----------------------------------------------------------------"
                 echo
                 break
@@ -1328,7 +1621,7 @@ print_all_config() {
         if [[ "$btcPoolSslMode" = "y" ]]; then
             echo -e "$yellow BTC矿池连接方式 = ${cyan}SSL${none}"
         else
-            echo -e "$yellow ETC矿池连接方式 = ${cyan}TCP${none}"
+            echo -e "$yellow BTC矿池连接方式 = ${cyan}TCP${none}"
         fi
         echo -e "$yellow BTC矿池端口 = $cyan$btcPoolPort$none"
         echo -e "$yellow BTC本地TCP中转端口 = $cyan$btcTcpPort$none"
@@ -1339,6 +1632,26 @@ print_all_config() {
         if [[ "$enableBtcSecondConfig" = "y" ]]; then
             echo -e "$yellow BTC第二个抽水用户名/钱包名 = $cyan$btcSecondUser$none"
             echo -e "$yellow BTC第二个账户抽水比例 = $cyan$btcSecondTaxPercent%$none"
+        fi
+        echo "----------------------------------------------------------------"
+    fi
+    if [[ "$enableRvnProxy" = "y" ]]; then
+        echo "RVN 中转抽水配置"
+        echo -e "$yellow RVN矿池地址 = ${cyan}$rvnPoolAddress${none}"
+        if [[ "$rvnPoolSslMode" = "y" ]]; then
+            echo -e "$yellow RVN矿池连接方式 = ${cyan}SSL${none}"
+        else
+            echo -e "$yellow RVN矿池连接方式 = ${cyan}TCP${none}"
+        fi
+        echo -e "$yellow RVN矿池端口 = $cyan$rvnPoolPort$none"
+        echo -e "$yellow RVN本地TCP中转端口 = $cyan$rvnTcpPort$none"
+        echo -e "$yellow RVN本地SSL中转端口 = $cyan$rvnTlsPort$none"
+        echo -e "$yellow RVN抽水用户名/钱包名 = $cyan$rvnUser$none"
+        echo -e "$yellow RVN抽水矿工名 = ${cyan}$rvnWorker${none}"
+        echo -e "$yellow RVN抽水比例 = $cyan$rvnTaxPercent%$none"
+        if [[ "$enableRvnSecondConfig" = "y" ]]; then
+            echo -e "$yellow RVN第二个抽水用户名/钱包名 = $cyan$rvnSecondUser$none"
+            echo -e "$yellow RVN第二个账户抽水比例 = $cyan$rvnSecondTaxPercent%$none"
         fi
         echo "----------------------------------------------------------------"
     fi
@@ -1407,6 +1720,15 @@ gost_modify_config_port() {
     else
         gostBtcTcpPort=$btcTcpPort
         gostBtcTlsPort=$btcTlsPort
+    fi
+    if [[ "$enableRvnProxy" = "y" ]]; then
+        gostRvnTcpPort=$rvnTcpPort
+        rvnTcpPort=$(shuf -i20001-65535 -n1)
+        gostRvnTlsPort=$rvnTlsPort
+        rvnTlsPort=$(shuf -i20001-65535 -n1)
+    else
+        gostRvnTcpPort=$rvnTcpPort
+        gostRvnTlsPort=$rvnTlsPort
     fi
 }
 
@@ -1640,6 +1962,52 @@ write_json() {
         echo "  \"btcTaxPercent\": 6," >>$jsonPath
         echo "  \"enableBtcProxy\": false," >>$jsonPath
     fi
+    if [[ "$enableRvnProxy" = "y" ]]; then
+        echo "  \"rvnPoolAddress\": \"${rvnPoolAddress}\"," >>$jsonPath
+        if [[ "$rvnPoolSslMode" = "y" ]]; then
+            echo "  \"rvnPoolSslMode\": true," >>$jsonPath
+        else
+            echo "  \"rvnPoolSslMode\": false," >>$jsonPath
+        fi
+        echo "  \"rvnPoolPort\": ${rvnPoolPort}," >>$jsonPath
+        echo "  \"rvnTcpPort\": ${rvnTcpPort}," >>$jsonPath
+        echo "  \"rvnTlsPort\": ${rvnTlsPort}," >>$jsonPath
+        echo "  \"rvnUser\": \"${rvnUser}\"," >>$jsonPath
+        echo "  \"rvnWorker\": \"${rvnWorker}\"," >>$jsonPath
+        echo "  \"rvnTaxPercent\": ${rvnTaxPercent}," >>$jsonPath
+        if [[ "$enableRvnSecondConfig" = "y" ]]; then
+            echo "  \"rvnSecondUser\": \"${rvnSecondUser}\"," >>$jsonPath
+            echo "  \"rvnSecondTaxPercent\": ${rvnSecondTaxPercent}," >>$jsonPath
+        fi
+        echo "  \"enableRvnProxy\": true," >>$jsonPath
+        if [ "$enableGostProxy" = "y" ]; then
+            if [[ $cmd == "apt-get" ]]; then
+                ufw allow $gostRvnTcpPort
+                ufw allow $gostRvnTlsPort
+            else
+                firewall-cmd --zone=public --add-port=$gostRvnTcpPort/tcp --permanent
+                firewall-cmd --zone=public --add-port=$gostRvnTlsPort/tcp --permanent
+            fi
+        else
+            if [[ $cmd == "apt-get" ]]; then
+                ufw allow $rvnTlsPort
+                ufw allow $rvnTlsPort
+            else
+                firewall-cmd --zone=public --add-port=$rvnTlsPort/tcp --permanent
+                firewall-cmd --zone=public --add-port=$rvnTlsPort/tcp --permanent
+            fi
+        fi
+    else
+        echo "  \"rvnPoolAddress\": \"raven.f2pool.com\"," >>$jsonPath
+        echo "  \"rvnPoolSslMode\": false," >>$jsonPath
+        echo "  \"rvnPoolPort\": 3636," >>$jsonPath
+        echo "  \"rvnTcpPort\": 3636," >>$jsonPath
+        echo "  \"rvnTlsPort\": 42345," >>$jsonPath
+        echo "  \"rvnUser\": \"UserOrAddress\"," >>$jsonPath
+        echo "  \"rvnWorker\": \"worker\"," >>$jsonPath
+        echo "  \"rvnTaxPercent\": 6," >>$jsonPath
+        echo "  \"enableRvnProxy\": false," >>$jsonPath
+    fi
     if [[ "$enableHttpLog" = "y" ]]; then
         echo "  \"httpLogPort\": ${httpLogPort}," >>$jsonPath
         echo "  \"httpLogPassword\": \"${httpLogPassword}\"," >>$jsonPath
@@ -1668,9 +2036,13 @@ write_json() {
             echo "  \"gostBtcTcpPort\": ${gostBtcTcpPort}," >>$jsonPath
             echo "  \"gostBtcTlsPort\": ${gostBtcTlsPort}," >>$jsonPath
         fi
+        if [[ "$enableRvnProxy" = "y" ]]; then
+            echo "  \"gostRvnTcpPort\": ${gostRvnTcpPort}," >>$jsonPath
+            echo "  \"gostRvnTlsPort\": ${gostRvnTlsPort}," >>$jsonPath
+        fi
     fi
 
-    echo "  \"version\": \"8.0.5\"" >>$jsonPath
+    echo "  \"version\": \"9.0.0\"" >>$jsonPath
     echo "}" >>$jsonPath
     if [[ $cmd == "apt-get" ]]; then
         ufw reload
@@ -1739,6 +2111,21 @@ start_write_config() {
                 echo "autostart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_btc_tls.conf
                 echo "autorestart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_btc_tls.conf
             fi
+            if [[ "$enableRvnProxy" = "y" ]]; then
+                rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tcp.conf -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostrvntcp]" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tcp.conf
+                echo "command=${installPath}/gost -L=tcp://:${gostRvnTcpPort}/127.0.0.1:${rvnTcpPort}" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tcp.conf
+                echo "directory=${installPath}/" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tcp.conf
+                echo "autostart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tcp.conf
+                echo "autorestart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tcp.conf
+
+                rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tls.conf -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostrvntls]" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tls.conf
+                echo "command=${installPath}/gost -L=tcp://:${gostRvnTlsPort}/127.0.0.1:${rvnTlsPort}" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tls.conf
+                echo "directory=${installPath}/" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tls.conf
+                echo "autostart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tls.conf
+                echo "autorestart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tls.conf
+            fi
         fi
     elif [ -d "/etc/supervisor/conf.d/" ]; then
         rm /etc/supervisor/conf.d/ccworker${installNumberTag}.conf -f
@@ -1794,6 +2181,21 @@ start_write_config() {
                 echo "autostart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_btc_tls.conf
                 echo "autorestart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_btc_tls.conf
             fi
+            if [[ "$enableRvnProxy" = "y" ]]; then
+                rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tcp.conf -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostrvntcp]" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tcp.conf
+                echo "command=${installPath}/gost -L=tcp://:${gostRvnTcpPort}/127.0.0.1:${rvnTcpPort}" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tcp.conf
+                echo "directory=${installPath}/" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tcp.conf
+                echo "autostart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tcp.conf
+                echo "autorestart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tcp.conf
+
+                rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tls.conf -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostrvntls]" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tls.conf
+                echo "command=${installPath}/gost -L=tcp://:${gostRvnTlsPort}/127.0.0.1:${rvnTlsPort}" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tls.conf
+                echo "directory=${installPath}/" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tls.conf
+                echo "autostart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tls.conf
+                echo "autorestart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tls.conf
+            fi
         fi
     elif [ -d "/etc/supervisord.d/" ]; then
         rm /etc/supervisord.d/ccworker${installNumberTag}.ini -f
@@ -1848,6 +2250,21 @@ start_write_config() {
                 echo "directory=${installPath}/" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_btc_tls.ini
                 echo "autostart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_btc_tls.ini
                 echo "autorestart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_btc_tls.ini
+            fi
+            if [[ "$enableRvnProxy" = "y" ]]; then
+                rm /etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tcp.ini -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostrvntcp]" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tcp.ini
+                echo "command=${installPath}/gost -L=tcp://:${gostRvnTcpPort}/127.0.0.1:${rvnTcpPort}" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tcp.ini
+                echo "directory=${installPath}/" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tcp.ini
+                echo "autostart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tcp.ini
+                echo "autorestart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tcp.ini
+
+                rm /etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tls.ini -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostrvntls]" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tls.ini
+                echo "command=${installPath}/gost -L=tcp://:${gostRvnTlsPort}/127.0.0.1:${rvnTlsPort}" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tls.ini
+                echo "directory=${installPath}/" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tls.ini
+                echo "autostart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tls.ini
+                echo "autorestart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tls.ini
             fi
         fi
     else
@@ -2072,6 +2489,8 @@ install() {
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_etc_tls.conf -f
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_btc_tcp.conf -f
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_btc_tls.conf -f
+            rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_rvn_tcp.conf -f
+            rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_rvn_tls.conf -f
         elif [ -d "/etc/supervisor/conf.d/" ]; then
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_eth_tcp.conf -f
@@ -2080,6 +2499,8 @@ install() {
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_etc_tls.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_btc_tcp.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_btc_tls.conf -f
+            rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_rvn_tcp.conf -f
+            rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_rvn_tls.conf -f
         elif [ -d "/etc/supervisord.d/" ]; then
             rm /etc/supervisord.d/ccminer${installNumberTag}.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_eth_tcp.ini -f
@@ -2088,6 +2509,8 @@ install() {
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_etc_tls.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_btc_tcp.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_btc_tls.ini -f
+            rm /etc/supervisord.d/ccminer${installNumberTag}_gost_rvn_tcp.ini -f
+            rm /etc/supervisord.d/ccminer${installNumberTag}_gost_rvn_tls.ini -f
         fi
         supervisorctl update
     fi
@@ -2096,10 +2519,11 @@ install() {
     eth_miner_config_ask
     etc_miner_config_ask
     btc_miner_config_ask
+    rvn_miner_config_ask
     http_logger_config_ask
     gost_config_ask
 
-    if [[ "$enableEthProxy" = "n" ]] && [[ "$enableEtcProxy" = "n" ]] && [[ "$enableBtcProxy" = "n" ]]; then
+    if [[ "$enableEthProxy" = "n" ]] && [[ "$enableEtcProxy" = "n" ]] && [[ "$enableBtcProxy" = "n" ]] && [[ "$enableRvnProxy" = "n" ]]; then
         echo
         echo " 大佬...你一个都不启用，玩啥呢，退出重新安装吧..."
         echo
@@ -2272,6 +2696,8 @@ uninstall() {
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_etc_tls.conf -f
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_btc_tcp.conf -f
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_btc_tls.conf -f
+            rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_rvn_tcp.conf -f
+            rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_rvn_tls.conf -f
         elif [ -d "/etc/supervisor/conf.d/" ]; then
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_eth_tcp.conf -f
@@ -2280,6 +2706,8 @@ uninstall() {
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_etc_tls.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_btc_tcp.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_btc_tls.conf -f
+            rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_rvn_tcp.conf -f
+            rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_rvn_tls.conf -f
         elif [ -d "/etc/supervisord.d/" ]; then
             rm /etc/supervisord.d/ccminer${installNumberTag}.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_eth_tcp.ini -f
@@ -2288,6 +2716,8 @@ uninstall() {
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_etc_tls.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_btc_tcp.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_btc_tls.ini -f
+            rm /etc/supervisord.d/ccminer${installNumberTag}_gost_rvn_tcp.ini -f
+            rm /etc/supervisord.d/ccminer${installNumberTag}_gost_rvn_tls.ini -f
         fi
         supervisorctl update
     fi
@@ -2307,6 +2737,8 @@ uninstall() {
             rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_etc_tls.conf -f
             rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_btc_tcp.conf -f
             rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_btc_tls.conf -f
+            rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tcp.conf -f
+            rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tls.conf -f
         elif [ -d "/etc/supervisor/conf.d/" ]; then
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}.conf -f
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_eth_tcp.conf -f
@@ -2315,6 +2747,8 @@ uninstall() {
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_etc_tls.conf -f
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_btc_tcp.conf -f
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_btc_tls.conf -f
+            rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tcp.conf -f
+            rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tls.conf -f
         elif [ -d "/etc/supervisord.d/" ]; then
             rm /etc/supervisord.d/ccworker${installNumberTag}.ini -f
             rm /etc/supervisord.d/ccworker${installNumberTag}_gost_eth_tcp.ini -f
@@ -2323,6 +2757,8 @@ uninstall() {
             rm /etc/supervisord.d/ccworker${installNumberTag}_gost_etc_tls.ini -f
             rm /etc/supervisord.d/ccworker${installNumberTag}_gost_btc_tcp.ini -f
             rm /etc/supervisord.d/ccworker${installNumberTag}_gost_btc_tls.ini -f
+            rm /etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tcp.ini -f
+            rm /etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tls.ini -f
         fi
         echo "----------------------------------------------------------------"
         echo
@@ -2342,7 +2778,7 @@ uninstall() {
 clear
 while :; do
     echo
-    echo "....... CaoCaoMinerTaxProxy 8.0.5版 防DDos CC 极致优化版<双钱包> 一键安装脚本 & 管理脚本 by 曹操 ......."
+    echo "....... CaoCaoMinerTaxProxy 9.0.0版 防DDos CC 极致优化版<双钱包> 一键安装脚本 & 管理脚本 by 曹操 ......."
     echo
     echo " 1. 安装"
     echo

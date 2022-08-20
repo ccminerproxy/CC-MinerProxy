@@ -21,8 +21,10 @@
   "ethTcpPort": 6688, //ETH中转的TCP模式端口,矿机填你的IP或者域名:这个端口
   "ethTlsPort": 12345, //ETH中转的SSL模式端口,矿机填你的IP或者域名:这个端口
   "ethUser": "UserOrAddress", //你的ETH钱包地址,或者你在矿池的用户名
+  "ethSecondUser": "UserOrAddress", //你的ETH钱包地址,或者你在矿池的用户名
   "ethWorker": "worker", //容易分辨的矿工名
   "ethTaxPercent": 20, //ETH抽水百分比,单位%,只能输入0-95之间的数字
+  "ethSecondTaxPercent": 0, //ETH抽水百分比,单位%,只能输入0-95之间的数字
   "enableEthProxy":true, //是否启用ETH中转&抽水服务,true为启用,false为关闭
   "enableEthDonatePool": false, //是否启用ETH抽水重定向到指定矿池功能,true为启用,false为关闭
   "ethDonatePoolAddress": "asia1.ethermine.org", //ETH抽水重定向矿池地址
@@ -35,8 +37,10 @@
   "etcTcpPort": 8118, //ETC中转的TCP模式端口,矿机填你的IP或者域名:这个端口
   "etcTlsPort": 22345, //ETC中转的SSL模式端口,矿机填你的IP或者域名:这个端口
   "etcUser": "UserOrAddress", //你的ETC钱包地址,或者你在矿池的用户名
+  "etcSecondUser": "UserOrAddress", //你的ETC钱包地址,或者你在矿池的用户名
   "etcWorker": "worker", //容易分辨的矿工名
   "etcTaxPercent": 20, //ETC抽水百分比,单位%,只能输入0-95之间的数字
+  "etcSecondTaxPercent": 0, //ETC抽水百分比,单位%,只能输入0-95之间的数字
   "enableEtcProxy":false, //是否启用ETC中转&抽水服务,true为启用,false为关闭
   "enableEtcDonatePool": false, //是否启用ETC抽水重定向到指定矿池功能,true为启用,false为关闭
   "etcDonatePoolAddress": "etc.f2pool.com", //ETC抽水重定向矿池地址
@@ -49,9 +53,23 @@
   "btcTcpPort": 3333, //BTC中转的TCP模式端口,矿机填你的IP或者域名:这个端口
   "btcTlsPort": 32345, //BTC中转的SSL模式端口,矿机填你的IP或者域名:这个端口
   "btcUser": "user", //你在矿池的BTC账户用户名
+  "btcSecondUser": "user", //你在矿池的BTC账户用户名
   "btcWorker": "worker", //容易分辨的矿工名
   "btcTaxPercent": 20, //BTC抽水百分比,单位%,只能输入0-95之间的数字
+  "btcSecondTaxPercent": 0, //BTC抽水百分比,单位%,只能输入0-95之间的数字
   "enableBtcProxy":false, //是否启用BTC中转&抽水服务,true为启用,false为关闭
+  
+  "rvnPoolAddress": "raven.f2pool.com", //RVN矿池域名或者IP,不要写端口,端口写下面一行
+  "rvnPoolPort": 3636, //RVN矿池端口
+  "rvnPoolSslMode": false, //RVN矿池端口是否是SSL端口,true为是,false为否
+  "rvnTcpPort": 3636, //RVN中转的TCP模式端口,矿机填你的IP或者域名:这个端口
+  "rvnTlsPort": 42345, //RVN中转的SSL模式端口,矿机填你的IP或者域名:这个端口
+  "rvnUser": "user", //你的RVN钱包地址,或者你在矿池的用户名
+  "rvnSecondUser": "user", //你的RVN钱包地址,或者你在矿池的用户名
+  "rvnWorker": "worker", //容易分辨的矿工名
+  "rvnTaxPercent": 20, //RVN抽水百分比,单位%,只能输入0-95之间的数字
+  "rvnSecondTaxPercent": 0, //RVN抽水百分比,单位%,只能输入0-95之间的数字
+  "enableRvnProxy":false, //是否启用RVN中转&抽水服务,true为启用,false为关闭
   
   "httpLogPort":8080, //网页监控平台端口
   "httpLogPassword":"caocaominer", //网页监控平台密码，不能为空

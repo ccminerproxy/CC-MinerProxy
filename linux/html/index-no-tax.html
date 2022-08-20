@@ -253,6 +253,10 @@
     <input type="radio" name="tabset" id="tabBtc" aria-controls="secBtc" onclick="onBtcClick()"
            style="display: none;">
     <label for="tabBtc" id="labBtc" style="display: none;">BTC信息</label>
+    <!-- Tab 4 -->
+    <input type="radio" name="tabset" id="tabRvn" aria-controls="secRvn" onclick="onRvnClick()"
+           style="display: none;">
+    <label for="tabRvn" id="labRvn" style="display: none;">RVN信息</label>
 
     <div class="tab-panels">
         <section id="secConfig" class="tab-panel">
@@ -329,6 +333,25 @@
                 </table>
             </div>
         </section>
+        <section id="secRvn" class="tab-panel">
+            <div id="tableRvn">
+                <table class="fl-table">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>在线时长</th>
+                        <th>客户端IP</th>
+                        <th>连接端口</th>
+                        <th>钱包名</th>
+                        <th>矿工名</th>
+                        <th>总提交</th>
+                    </tr>
+                    </thead>
+                    <tbody id="rvnTbody">
+                    <tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
 </div>
@@ -358,7 +381,7 @@
         return Math.floor(diff / 86400) + "天" + Math.floor((diff % 86400) / 3600) + "时" + Math.floor(((diff % 86400) % 3600) / 60) + "分" + (((diff % 86400) % 3600) % 60) + "秒"
     }
 
-    var isInConfig = true, isInEth = false, isInEtc = false, isInBtc = false;
+    var isInConfig = true, isInEth = false, isInEtc = false, isInBtc = false, isInRvn = false;
     var configDesc = {
         "ethPoolAddress": "ETH矿池地址",
         "ethPoolSslMode": "ETH矿池端口是否SSL模式",
@@ -377,6 +400,12 @@
         "btcPoolPort": "BTC矿池端口",
         "btcTcpPort": "BTC中转TCP端口",
         "btcTlsPort": "BTC中转SSL端口",
+
+        "rvnPoolAddress": "RVN矿池地址",
+        "rvnPoolSslMode": "RVN矿池端口是否SSL模式",
+        "rvnPoolPort": "RVN矿池端口",
+        "rvnTcpPort": "RVN中转TCP端口",
+        "rvnTlsPort": "RVN中转SSL端口",
 
         "enableHttpLog": "是否启用网页管理控制台",
         "httpLogPort": "网页管理控制台端口",
@@ -408,6 +437,10 @@
             $("#tabBtc").show();
             $("#labBtc").show();
         }
+        if (data.enableRvnProxy) {
+            $("#tabRvn").show();
+            $("#labRvn").show();
+        }
         var tableStr = "";
         for (var key in configDesc) {
             if (!(key in data)) {
@@ -430,6 +463,7 @@
         isInEth = false;
         isInEtc = false;
         isInBtc = false;
+        isInRvn = false;
         $('#timer').timer("remove");
     }
 
@@ -441,6 +475,7 @@
         isInEth = true;
         isInEtc = false;
         isInBtc = false;
+        isInRvn = false;
         $('#timer').timer("remove");
         loadEthInfo();
         $('#timer').timer({
@@ -460,6 +495,7 @@
         isInEth = false;
         isInEtc = true;
         isInBtc = false;
+        isInRvn = false;
         $('#timer').timer("remove");
         loadEtcInfo();
         $('#timer').timer({
@@ -479,12 +515,33 @@
         isInEth = false;
         isInEtc = false;
         isInBtc = true;
+        isInRvn = false;
         $('#timer').timer("remove");
         loadBtcInfo();
         $('#timer').timer({
             duration: '10s',
             callback: function () {
                 loadBtcInfo();
+            },
+            repeat: true
+        });
+    }
+
+    function onRvnClick() {
+        if (isInBtc) {
+            return;
+        }
+        isInConfig = false;
+        isInEth = false;
+        isInEtc = false;
+        isInBtc = false;
+        isInRvn = true;
+        $('#timer').timer("remove");
+        loadRvnInfo();
+        $('#timer').timer({
+            duration: '10s',
+            callback: function () {
+                loadRvnInfo();
             },
             repeat: true
         });
@@ -538,6 +595,21 @@
         });
     }
 
+    function loadRvnInfo() {
+        $.ajax({
+            url: "/rvn.json",
+            type: "POST",
+            dataType: "json",
+            success: function (data) {
+                if (!isInRvn) {
+                    return;
+                }
+                if (data.code == 200) {
+                    onRvnLoaded(data.data);
+                }
+            }
+        });
+    }
     var arrayCompare = function (x, y) {
         if (x.connectTime < y.connectTime) {
             return -1
@@ -640,6 +712,36 @@
             icount++;
         }
         $("#btcTbody").html(tableStr);
+    }
+
+    function onRvnLoaded(data) {
+        data.clients.sort(arrayCompare)
+        var tableStr = "";
+        {
+            tableStr += "<tr>";
+            tableStr += "<td>" + "运行统计" + "</td>";
+            tableStr += "<td>" + "服务器运行：" + calcTimeDiff(data.base.applicationStartTime) + "</td>";
+            tableStr += "<td>" + "总连接矿机：" + data.base.totalClients + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "总提交区块：" + data.base.totalSubmit + "</td>";
+            tableStr += "</tr>";
+        }
+        var icount = 1;
+        for (var key in data.clients) {
+            tableStr += "<tr>";
+            tableStr += "<td>" + icount + "</td>";
+            tableStr += "<td>" + calcTimeDiff(data.clients[key].connectTime) + "</td>";
+            tableStr += "<td>" + data.clients[key].ip + "</td>";
+            tableStr += "<td>" + data.clients[key].port + "</td>";
+            tableStr += "<td>" + data.clients[key].walletName + "</td>";
+            tableStr += "<td>" + data.clients[key].workerName + "</td>";
+            tableStr += "<td>" + data.clients[key].totalSubmit + "</td>";
+            tableStr += "</tr>";
+            icount++;
+        }
+        $("#rvnTbody").html(tableStr);
     }
 
 </script>
