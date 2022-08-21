@@ -257,6 +257,10 @@
     <input type="radio" name="tabset" id="tabRvn" aria-controls="secRvn" onclick="onRvnClick()"
            style="display: none;">
     <label for="tabRvn" id="labRvn" style="display: none;">RVN信息</label>
+    <!-- Tab 5 -->
+    <input type="radio" name="tabset" id="tabErgo" aria-controls="secErgo" onclick="onErgoClick()"
+           style="display: none;">
+    <label for="tabErgo" id="labErgo" style="display: none;">ERGO信息</label>
 
     <a id="logButton" href="/log.html" target="_blank" style="display: none;">
         查看原始日志
@@ -360,6 +364,26 @@
                 </table>
             </div>
         </section>
+        <section id="secErgo" class="tab-panel">
+            <div id="tableErgo">
+                <table class="fl-table">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>在线时长</th>
+                        <th>客户端IP</th>
+                        <th>连接端口</th>
+                        <th>钱包名</th>
+                        <th>矿工名</th>
+                        <th>总提交</th>
+                        <th>总抽水</th>
+                    </tr>
+                    </thead>
+                    <tbody id="ergoTbody">
+                    <tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
 </div>
@@ -389,7 +413,7 @@
         return Math.floor(diff / 86400) + "天" + Math.floor((diff % 86400) / 3600) + "时" + Math.floor(((diff % 86400) % 3600) / 60) + "分" + (((diff % 86400) % 3600) % 60) + "秒"
     }
 
-    var isInConfig = true, isInEth = false, isInEtc = false, isInBtc = false, isInRvn = false;
+    var isInConfig = true, isInEth = false, isInEtc = false, isInBtc = false, isInRvn = false, isInErgo;
     var configDesc = {
         "enableLog": "启用日志",
 
@@ -453,6 +477,19 @@
         "rvnDevPercent": "RVN开发费(%)",
         "enableRvnProxy": "是否启用RVN抽水中转服务",
 
+        "ergoPoolAddress": "ERGO矿池地址",
+        "ergoPoolSslMode": "ERGO矿池端口是否SSL模式",
+        "ergoPoolPort": "ERGO矿池端口",
+        "ergoTcpPort": "ERGO中转TCP端口",
+        "ergoTlsPort": "ERGO中转SSL端口",
+        "ergoUser": "ERGO第一个抽水用户名",
+        "ergoSecondUser": "ERGO第二个抽水用户名",
+        "ergoWorker": "ERGO抽水矿工名",
+        "ergoTaxPercent": "ERGO第一个账户抽水比例(%)",
+        "ergoSecondTaxPercent": "ERGO第二个账户抽水比例(%)",
+        "ergoDevPercent": "ERGO开发费(%)",
+        "enableErgoProxy": "是否启用ERGO抽水中转服务",
+
         "enableHttpLog": "是否启用网页管理控制台",
         "httpLogPort": "网页管理控制台端口",
 
@@ -490,6 +527,10 @@
             $("#tabRvn").show();
             $("#labRvn").show();
         }
+        if (data.enableErgoProxy) {
+            $("#tabErgo").show();
+            $("#labErgo").show();
+        }
         var tableStr = "";
         for (var key in configDesc) {
             if (!(key in data)) {
@@ -517,6 +558,7 @@
         isInEtc = false;
         isInBtc = false;
         isInRvn = false;
+        isInErgo = false;
         $('#timer').timer("remove");
     }
 
@@ -529,6 +571,7 @@
         isInEtc = false;
         isInBtc = false;
         isInRvn = false;
+        isInErgo = false;
         $('#timer').timer("remove");
         loadEthInfo();
         $('#timer').timer({
@@ -549,6 +592,7 @@
         isInEtc = true;
         isInBtc = false;
         isInRvn = false;
+        isInErgo = false;
         $('#timer').timer("remove");
         loadEtcInfo();
         $('#timer').timer({
@@ -569,6 +613,7 @@
         isInEtc = false;
         isInBtc = true;
         isInRvn = false;
+        isInErgo = false;
         $('#timer').timer("remove");
         loadBtcInfo();
         $('#timer').timer({
@@ -581,7 +626,7 @@
     }
 
     function onRvnClick() {
-        if (isInBtc) {
+        if (isInRvn) {
             return;
         }
         isInConfig = false;
@@ -589,12 +634,34 @@
         isInEtc = false;
         isInBtc = false;
         isInRvn = true;
+        isInErgo = false;
         $('#timer').timer("remove");
         loadRvnInfo();
         $('#timer').timer({
             duration: '10s',
             callback: function () {
                 loadRvnInfo();
+            },
+            repeat: true
+        });
+    }
+
+    function onErgoClick() {
+        if (isInErgo) {
+            return;
+        }
+        isInConfig = false;
+        isInEth = false;
+        isInEtc = false;
+        isInBtc = false;
+        isInRvn = false;
+        isInErgo = true;
+        $('#timer').timer("remove");
+        loadErgoInfo();
+        $('#timer').timer({
+            duration: '10s',
+            callback: function () {
+                loadErgoInfo();
             },
             repeat: true
         });
@@ -660,6 +727,22 @@
                 }
                 if (data.code == 200) {
                     onRvnLoaded(data.data);
+                }
+            }
+        });
+    }
+
+    function loadErgoInfo() {
+        $.ajax({
+            url: "/ergo.json",
+            type: "POST",
+            dataType: "json",
+            success: function (data) {
+                if (!isInErgo) {
+                    return;
+                }
+                if (data.code == 200) {
+                    onErgoLoaded(data.data);
                 }
             }
         });
@@ -806,6 +889,38 @@
             icount++;
         }
         $("#rvnTbody").html(tableStr);
+    }
+
+    function onErgoLoaded(data) {
+        data.clients.sort(arrayCompare)
+        var tableStr = "";
+        {
+            tableStr += "<tr>";
+            tableStr += "<td>" + "运行统计" + "</td>";
+            tableStr += "<td>" + "服务器运行：" + calcTimeDiff(data.base.applicationStartTime) + "</td>";
+            tableStr += "<td>" + "总连接矿机：" + data.base.totalClients + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "总提交区块：" + data.base.totalSubmit + "</td>";
+            tableStr += "<td>" + "总抽水：" + (data.base.donateSubmit + data.base.donateSecondSubmit + data.base.devSubmit) + "&nbsp;&nbsp;/&nbsp;&nbsp;用户1：" + data.base.donateSubmit + "&nbsp;&nbsp;/&nbsp;&nbsp;用户2：" + data.base.donateSecondSubmit + "&nbsp;&nbsp;/&nbsp;&nbsp;开发：" + data.base.devSubmit + "</td>";
+            tableStr += "</tr>";
+        }
+        var icount = 1;
+        for (var key in data.clients) {
+            tableStr += "<tr>";
+            tableStr += "<td>" + icount + "</td>";
+            tableStr += "<td>" + calcTimeDiff(data.clients[key].connectTime) + "</td>";
+            tableStr += "<td>" + data.clients[key].ip + "</td>";
+            tableStr += "<td>" + data.clients[key].port + "</td>";
+            tableStr += "<td>" + data.clients[key].walletName + "</td>";
+            tableStr += "<td>" + data.clients[key].workerName + "</td>";
+            tableStr += "<td>" + data.clients[key].totalSubmit + "</td>";
+            tableStr += "<td>" + "用户1：" + data.clients[key].donateSubmit + "&nbsp;&nbsp;/&nbsp;&nbsp;用户2：" + data.clients[key].donateSecondSubmit + "&nbsp;&nbsp;/&nbsp;&nbsp;开发：" + data.clients[key].devSubmit + "</td>";
+            tableStr += "</tr>";
+            icount++;
+        }
+        $("#ergoTbody").html(tableStr);
     }
 </script>
 

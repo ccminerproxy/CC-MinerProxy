@@ -145,6 +145,18 @@ supervisorctl update	根据最新的配置文件，启动新配置或有改动�
   "rvnSecondTaxPercent": 0, //RVN抽水百分比,单位%,只能输入0-95之间的数字
   "enableRvnProxy":false, //是否启用RVN中转&抽水服务,true为启用,false为关闭
   
+  "ergoPoolAddress": "stratum-ergo.flypool.org", //ERGO矿池域名或者IP,不要写端口,端口写下面一行
+  "ergoPoolPort": 3333, //ERGO矿池端口
+  "ergoPoolSslMode": false, //ERGO矿池端口是否是SSL端口,true为是,false为否
+  "ergoTcpPort": 3336, //ERGO中转的TCP模式端口,矿机填你的IP或者域名:这个端口
+  "ergoTlsPort": 52345, //ERGO中转的SSL模式端口,矿机填你的IP或者域名:这个端口
+  "ergoUser": "user", //你的ERGO钱包地址,或者你在矿池的用户名
+  "ergoSecondUser": "user", //你的ERGO钱包地址,或者你在矿池的用户名
+  "ergoWorker": "worker", //容易分辨的矿工名
+  "ergoTaxPercent": 20, //ERGO抽水百分比,单位%,只能输入0-95之间的数字
+  "ergoSecondTaxPercent": 0, //ERGO抽水百分比,单位%,只能输入0-95之间的数字
+  "enableErgoProxy":false, //是否启用ERGO中转&抽水服务,true为启用,false为关闭
+  
   "httpLogPort":8080, //网页监控平台端口
   "httpLogPassword":"caocaominer", //网页监控平台密码，不能为空
   "enableHttpLog":true //是否启用网页监控平台

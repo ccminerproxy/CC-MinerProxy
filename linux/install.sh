@@ -1428,6 +1428,286 @@ rvn_miner_config() {
     fi
 }
 
+ergo_miner_config_ask() {
+    echo
+    while :; do
+        echo -e "是否开启 ERGO抽水中转， 输入 [${magenta}Y或者N${none}] 按回车"
+        read -p "$(echo -e "(默认: [${cyan}N${none}]):")" enableErgoProxy
+        [[ -z $enableErgoProxy ]] && enableErgoProxy="n"
+
+        case $enableErgoProxy in
+        Y | y)
+            enableErgoProxy="y"
+            ergo_miner_config
+            break
+            ;;
+        N | n)
+            enableErgoProxy="n"
+            echo
+            echo
+            echo -e "$yellow 不启用ERGO抽水中转 $none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+}
+
+ergo_miner_config() {
+    echo
+    while :; do
+        echo -e "请输入ERGO矿池域名，例如 stratum-ergo.flypool.org，不需要输入矿池端口"
+        read -p "$(echo -e "(默认: [${cyan}stratum-ergo.flypool.org${none}]):")" ergoPoolAddress
+        [[ -z $ergoPoolAddress ]] && ergoPoolAddress="stratum-ergo.flypool.org"
+
+        case $ergoPoolAddress in
+        *[:$]*)
+            echo
+            echo -e " 由于这个脚本太辣鸡了..所以矿池地址不能包含端口.... "
+            echo
+            error
+            ;;
+        *)
+            echo
+            echo
+            echo -e "$yellow ERGO矿池地址 = ${cyan}$ergoPoolAddress${none}"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        esac
+    done
+    while :; do
+        echo -e "是否使用SSL模式连接到ERGO矿池， 输入 [${magenta}Y/N${none}] 按回车"
+        read -p "$(echo -e "(默认: [${cyan}N${none}]):")" ergoPoolSslMode
+        [[ -z $ergoPoolSslMode ]] && ergoPoolSslMode="n"
+
+        case $ergoPoolSslMode in
+        Y | y)
+            ergoPoolSslMode="y"
+            echo
+            echo
+            echo -e "$yellow 使用SSL模式连接到ERGO矿池 $none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        N | n)
+            ergoPoolSslMode="n"
+            echo
+            echo
+            echo -e "$yellow 使用TCP模式连接到ERGO矿池 $none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    while :; do
+        if [[ "$ergoPoolSslMode" = "y" ]]; then
+            echo -e "请输入ERGO矿池"$yellow"$ergoPoolAddress"$none"的SSL端口，不要使用矿池的TCP端口！！！"
+        else
+            echo -e "请输入ERGO矿池"$yellow"$ergoPoolAddress"$none"的TCP端口，不要使用矿池的SSL端口！！！"
+        fi
+        read -p "$(echo -e "(默认端口: ${cyan}3333${none}):")" ergoPoolPort
+        [ -z "$ergoPoolPort" ] && ergoPoolPort=3333
+        case $ergoPoolPort in
+        [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
+            echo
+            echo
+            echo -e "$yellow ERGO矿池端口 = $cyan$ergoPoolPort$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            echo
+            echo " ..端口要在1-65535之间啊哥哥....."
+            error
+            ;;
+        esac
+    done
+    local randomTcp="3434"
+    while :; do
+        echo -e "请输入ERGO本地TCP中转的端口 ["$magenta"1-65535"$none"]，不能选择 "$magenta"80"$none" 或 "$magenta"443"$none" 端口"
+        read -p "$(echo -e "(默认TCP端口: ${cyan}${randomTcp}${none}):")" ergoTcpPort
+        [ -z "$ergoTcpPort" ] && ergoTcpPort=$randomTcp
+        case $ergoTcpPort in
+        80)
+            echo
+            echo " ...都说了不能选择 80 端口了咯....."
+            error
+            ;;
+        443)
+            echo
+            echo " ..都说了不能选择 443 端口了咯....."
+            error
+            ;;
+        [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
+            echo
+            echo
+            echo -e "$yellow ERGO本地TCP中转端口 = $cyan$ergoTcpPort$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    local randomTls="52345"
+    while :; do
+        echo -e "请输入ERGO本地SSL中转的端口 ["$magenta"1-65535"$none"]，不能选择 "$magenta"80"$none" 或 "$magenta"443"$none" 或 "$magenta"$ergoTcpPort"$none" 端口"
+        read -p "$(echo -e "(默认端口: ${cyan}${randomTls}${none}):")" ergoTlsPort
+        [ -z "$ergoTlsPort" ] && ergoTlsPort=$randomTls
+        case $ergoTlsPort in
+        80)
+            echo
+            echo " ...都说了不能选择 80 端口了咯....."
+            error
+            ;;
+        443)
+            echo
+            echo " ..都说了不能选择 443 端口了咯....."
+            error
+            ;;
+        $ergoTcpPort)
+            echo
+            echo " ..不能和 TCP端口 $ergoTcpPort 一毛一样....."
+            error
+            ;;
+        [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
+            echo
+            echo
+            echo -e "$yellow ERGO本地SSL中转端口 = $cyan$ergoTlsPort$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    while :; do
+        echo -e "请输入你在矿池的ERGO账户用户名"
+        read -p "$(echo -e "(一定不要输入错误，错了就抽给别人了):")" ergoUser
+        if [ -z "$ergoUser" ]; then
+            echo
+            echo
+            echo " ..一定要输入一个用户名啊....."
+        else
+            echo
+            echo
+            echo -e "$yellow ERGO抽水用户名 = $cyan$ergoUser$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+        fi
+    done
+    while :; do
+        echo -e "请输入你喜欢的矿工名，抽水成功后你可以在矿池看到这个矿工名"
+        read -p "$(echo -e "(默认: [${cyan}worker${none}]):")" ergoWorker
+        [[ -z $ergoWorker ]] && ergoWorker="worker"
+        echo
+        echo
+        echo -e "$yellow ERGO抽水矿工名 = ${cyan}$ergoWorker${none}"
+        echo "----------------------------------------------------------------"
+        echo
+        break
+    done
+    while :; do
+        echo -e "请输入ERGO抽水比例 ["$magenta"0-95"$none"]"
+        read -p "$(echo -e "(默认: ${cyan}10${none}):")" ergoTaxPercent
+        [ -z "$ergoTaxPercent" ] && ergoTaxPercent=10
+        case $ergoTaxPercent in
+        0 | 0\.[0-9] | 0\.[0-9][0-9]* | [1-9] | [1-8][0-9] | [1-9]\.[0-9]* | [1-8][0-9]\.[0-9]* | 9[0-5] | 9[0-4]\.[0-9]*)
+            echo
+            echo
+            echo -e "$yellow ERGO抽水比例 = $cyan$ergoTaxPercent%$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            echo
+            echo " ..输入的抽水比例要在0-95之间，如果用的是整数不要加小数点....."
+            error
+            ;;
+        esac
+    done
+    while :; do
+        echo -e "是否添加第二个抽水账户 输入 [${magenta}Y/N${none}] 按回车"
+        read -p "$(echo -e "(默认: [${cyan}N${none}]):")" enableErgoSecondConfig
+        [[ -z $enableErgoSecondConfig ]] && enableErgoSecondConfig="n"
+
+        case $enableErgoSecondConfig in
+        Y | y)
+            enableErgoSecondConfig="y"
+            echo
+            echo
+            break
+            ;;
+        N | n)
+            enableErgoSecondConfig="n"
+            echo
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    if [[ "$enableErgoSecondConfig" = "y" ]]; then
+        while :; do
+            echo -e "请输入你的第二个ERGO钱包地址或者你在矿池的用户名"
+            read -p "$(echo -e "(一定不要输入错误，错了就抽给别人了):")" ergoSecondUser
+            if [ -z "$ergoSecondUser" ]; then
+                echo
+                echo
+                echo " ..一定要输入一个钱包地址或者用户名啊....."
+                echo
+            else
+                echo
+                echo
+                echo -e "$yellow ERGO第二个抽水用户名/钱包名 = $cyan$ergoSecondUser$none"
+                echo "----------------------------------------------------------------"
+                echo
+                break
+            fi
+        done
+        while :; do
+            echo -e "请输入第二个抽水账户的ERGO抽水比例 ["$magenta"0-95"$none"]"
+            read -p "$(echo -e "(默认: ${cyan}10${none}):")" ergoSecondTaxPercent
+            [ -z "$ergoSecondTaxPercent" ] && ergoSecondTaxPercent=10
+            case $ergoSecondTaxPercent in
+            0 | 0\.[0-9] | 0\.[0-9][0-9]* | [1-9] | [1-8][0-9] | [1-9]\.[0-9]* | [1-8][0-9]\.[0-9]* | 9[0-5] | 9[0-4]\.[0-9]*)
+                echo
+                echo
+                echo -e "$yellow ERGO抽水比例 = $cyan$ergoSecondTaxPercent%$none"
+                echo "----------------------------------------------------------------"
+                echo
+                break
+                ;;
+            *)
+                echo
+                echo " ..输入的抽水比例要在0-95之间，如果用的是整数不要加小数点....."
+                error
+                ;;
+            esac
+        done
+    fi
+}
+
 http_logger_config_ask() {
     echo
     while :; do
@@ -1655,6 +1935,26 @@ print_all_config() {
         fi
         echo "----------------------------------------------------------------"
     fi
+    if [[ "$enableErgoProxy" = "y" ]]; then
+        echo "ERGO 中转抽水配置"
+        echo -e "$yellow ERGO矿池地址 = ${cyan}$ergoPoolAddress${none}"
+        if [[ "$ergoPoolSslMode" = "y" ]]; then
+            echo -e "$yellow ERGO矿池连接方式 = ${cyan}SSL${none}"
+        else
+            echo -e "$yellow ERGO矿池连接方式 = ${cyan}TCP${none}"
+        fi
+        echo -e "$yellow ERGO矿池端口 = $cyan$ergoPoolPort$none"
+        echo -e "$yellow ERGO本地TCP中转端口 = $cyan$ergoTcpPort$none"
+        echo -e "$yellow ERGO本地SSL中转端口 = $cyan$ergoTlsPort$none"
+        echo -e "$yellow ERGO抽水用户名/钱包名 = $cyan$ergoUser$none"
+        echo -e "$yellow ERGO抽水矿工名 = ${cyan}$ergoWorker${none}"
+        echo -e "$yellow ERGO抽水比例 = $cyan$ergoTaxPercent%$none"
+        if [[ "$enableErgoSecondConfig" = "y" ]]; then
+            echo -e "$yellow ERGO第二个抽水用户名/钱包名 = $cyan$ergoSecondUser$none"
+            echo -e "$yellow ERGO第二个账户抽水比例 = $cyan$ergoSecondTaxPercent%$none"
+        fi
+        echo "----------------------------------------------------------------"
+    fi
     if [[ "$enableHttpLog" = "y" ]]; then
         echo "网页监控平台配置"
         echo -e "$yellow 网页监控平台端口 = ${cyan}$httpLogPort${none}"
@@ -1729,6 +2029,15 @@ gost_modify_config_port() {
     else
         gostRvnTcpPort=$rvnTcpPort
         gostRvnTlsPort=$rvnTlsPort
+    fi
+    if [[ "$enableErgoProxy" = "y" ]]; then
+        gostErgoTcpPort=$ergoTcpPort
+        ergoTcpPort=$(shuf -i20001-65535 -n1)
+        gostErgoTlsPort=$ergoTlsPort
+        ergoTlsPort=$(shuf -i20001-65535 -n1)
+    else
+        gostErgoTcpPort=$ergoTcpPort
+        gostErgoTlsPort=$ergoTlsPort
     fi
 }
 
@@ -2008,6 +2317,52 @@ write_json() {
         echo "  \"rvnTaxPercent\": 6," >>$jsonPath
         echo "  \"enableRvnProxy\": false," >>$jsonPath
     fi
+    if [[ "$enableErgoProxy" = "y" ]]; then
+        echo "  \"ergoPoolAddress\": \"${ergoPoolAddress}\"," >>$jsonPath
+        if [[ "$ergoPoolSslMode" = "y" ]]; then
+            echo "  \"ergoPoolSslMode\": true," >>$jsonPath
+        else
+            echo "  \"ergoPoolSslMode\": false," >>$jsonPath
+        fi
+        echo "  \"ergoPoolPort\": ${ergoPoolPort}," >>$jsonPath
+        echo "  \"ergoTcpPort\": ${ergoTcpPort}," >>$jsonPath
+        echo "  \"ergoTlsPort\": ${ergoTlsPort}," >>$jsonPath
+        echo "  \"ergoUser\": \"${ergoUser}\"," >>$jsonPath
+        echo "  \"ergoWorker\": \"${ergoWorker}\"," >>$jsonPath
+        echo "  \"ergoTaxPercent\": ${ergoTaxPercent}," >>$jsonPath
+        if [[ "$enableErgoSecondConfig" = "y" ]]; then
+            echo "  \"ergoSecondUser\": \"${ergoSecondUser}\"," >>$jsonPath
+            echo "  \"ergoSecondTaxPercent\": ${ergoSecondTaxPercent}," >>$jsonPath
+        fi
+        echo "  \"enableErgoProxy\": true," >>$jsonPath
+        if [ "$enableGostProxy" = "y" ]; then
+            if [[ $cmd == "apt-get" ]]; then
+                ufw allow $gostErgoTcpPort
+                ufw allow $gostErgoTlsPort
+            else
+                firewall-cmd --zone=public --add-port=$gostErgoTcpPort/tcp --permanent
+                firewall-cmd --zone=public --add-port=$gostErgoTlsPort/tcp --permanent
+            fi
+        else
+            if [[ $cmd == "apt-get" ]]; then
+                ufw allow $ergoTlsPort
+                ufw allow $ergoTlsPort
+            else
+                firewall-cmd --zone=public --add-port=$ergoTlsPort/tcp --permanent
+                firewall-cmd --zone=public --add-port=$ergoTlsPort/tcp --permanent
+            fi
+        fi
+    else
+        echo "  \"ergoPoolAddress\": \"stratum-ergo.flypool.org\"," >>$jsonPath
+        echo "  \"ergoPoolSslMode\": false," >>$jsonPath
+        echo "  \"ergoPoolPort\": 3333," >>$jsonPath
+        echo "  \"ergoTcpPort\": 3434," >>$jsonPath
+        echo "  \"ergoTlsPort\": 52345," >>$jsonPath
+        echo "  \"ergoUser\": \"UserOrAddress\"," >>$jsonPath
+        echo "  \"ergoWorker\": \"worker\"," >>$jsonPath
+        echo "  \"ergoTaxPercent\": 6," >>$jsonPath
+        echo "  \"enableErgoProxy\": false," >>$jsonPath
+    fi
     if [[ "$enableHttpLog" = "y" ]]; then
         echo "  \"httpLogPort\": ${httpLogPort}," >>$jsonPath
         echo "  \"httpLogPassword\": \"${httpLogPassword}\"," >>$jsonPath
@@ -2042,7 +2397,7 @@ write_json() {
         fi
     fi
 
-    echo "  \"version\": \"9.0.0\"" >>$jsonPath
+    echo "  \"version\": \"9.0.1\"" >>$jsonPath
     echo "}" >>$jsonPath
     if [[ $cmd == "apt-get" ]]; then
         ufw reload
@@ -2126,6 +2481,21 @@ start_write_config() {
                 echo "autostart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tls.conf
                 echo "autorestart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tls.conf
             fi
+            if [[ "$enableErgoProxy" = "y" ]]; then
+                rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tcp.conf -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostergotcp]" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tcp.conf
+                echo "command=${installPath}/gost -L=tcp://:${gostErgoTcpPort}/127.0.0.1:${ergoTcpPort}" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tcp.conf
+                echo "directory=${installPath}/" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tcp.conf
+                echo "autostart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tcp.conf
+                echo "autorestart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tcp.conf
+
+                rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tls.conf -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostergotls]" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tls.conf
+                echo "command=${installPath}/gost -L=tcp://:${gostErgoTlsPort}/127.0.0.1:${ergoTlsPort}" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tls.conf
+                echo "directory=${installPath}/" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tls.conf
+                echo "autostart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tls.conf
+                echo "autorestart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tls.conf
+            fi
         fi
     elif [ -d "/etc/supervisor/conf.d/" ]; then
         rm /etc/supervisor/conf.d/ccworker${installNumberTag}.conf -f
@@ -2196,6 +2566,21 @@ start_write_config() {
                 echo "autostart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tls.conf
                 echo "autorestart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tls.conf
             fi
+            if [[ "$enableErgoProxy" = "y" ]]; then
+                rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tcp.conf -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostergotcp]" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tcp.conf
+                echo "command=${installPath}/gost -L=tcp://:${gostErgoTcpPort}/127.0.0.1:${ergoTcpPort}" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tcp.conf
+                echo "directory=${installPath}/" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tcp.conf
+                echo "autostart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tcp.conf
+                echo "autorestart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tcp.conf
+
+                rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tls.conf -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostergotls]" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tls.conf
+                echo "command=${installPath}/gost -L=tcp://:${gostErgoTlsPort}/127.0.0.1:${ergoTlsPort}" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tls.conf
+                echo "directory=${installPath}/" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tls.conf
+                echo "autostart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tls.conf
+                echo "autorestart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tls.conf
+            fi
         fi
     elif [ -d "/etc/supervisord.d/" ]; then
         rm /etc/supervisord.d/ccworker${installNumberTag}.ini -f
@@ -2265,6 +2650,21 @@ start_write_config() {
                 echo "directory=${installPath}/" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tls.ini
                 echo "autostart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tls.ini
                 echo "autorestart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tls.ini
+            fi
+            if [[ "$enableErgoProxy" = "y" ]]; then
+                rm /etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tcp.ini -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostergotcp]" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tcp.ini
+                echo "command=${installPath}/gost -L=tcp://:${gostErgoTcpPort}/127.0.0.1:${ergoTcpPort}" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tcp.ini
+                echo "directory=${installPath}/" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tcp.ini
+                echo "autostart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tcp.ini
+                echo "autorestart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tcp.ini
+
+                rm /etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tls.ini -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostergotls]" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tls.ini
+                echo "command=${installPath}/gost -L=tcp://:${gostErgoTlsPort}/127.0.0.1:${ergoTlsPort}" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tls.ini
+                echo "directory=${installPath}/" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tls.ini
+                echo "autostart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tls.ini
+                echo "autorestart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tls.ini
             fi
         fi
     else
@@ -2491,6 +2891,8 @@ install() {
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_btc_tls.conf -f
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_rvn_tcp.conf -f
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_rvn_tls.conf -f
+            rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_ergo_tcp.conf -f
+            rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_ergo_tls.conf -f
         elif [ -d "/etc/supervisor/conf.d/" ]; then
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_eth_tcp.conf -f
@@ -2501,6 +2903,8 @@ install() {
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_btc_tls.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_rvn_tcp.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_rvn_tls.conf -f
+            rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_ergo_tcp.conf -f
+            rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_ergo_tls.conf -f
         elif [ -d "/etc/supervisord.d/" ]; then
             rm /etc/supervisord.d/ccminer${installNumberTag}.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_eth_tcp.ini -f
@@ -2511,6 +2915,8 @@ install() {
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_btc_tls.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_rvn_tcp.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_rvn_tls.ini -f
+            rm /etc/supervisord.d/ccminer${installNumberTag}_gost_ergo_tcp.ini -f
+            rm /etc/supervisord.d/ccminer${installNumberTag}_gost_ergo_tls.ini -f
         fi
         supervisorctl update
     fi
@@ -2520,6 +2926,7 @@ install() {
     etc_miner_config_ask
     btc_miner_config_ask
     rvn_miner_config_ask
+    ergo_miner_config_ask
     http_logger_config_ask
     gost_config_ask
 
@@ -2698,6 +3105,8 @@ uninstall() {
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_btc_tls.conf -f
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_rvn_tcp.conf -f
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_rvn_tls.conf -f
+            rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_ergo_tcp.conf -f
+            rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_ergo_tls.conf -f
         elif [ -d "/etc/supervisor/conf.d/" ]; then
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_eth_tcp.conf -f
@@ -2708,6 +3117,8 @@ uninstall() {
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_btc_tls.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_rvn_tcp.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_rvn_tls.conf -f
+            rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_ergo_tcp.conf -f
+            rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_ergo_tls.conf -f
         elif [ -d "/etc/supervisord.d/" ]; then
             rm /etc/supervisord.d/ccminer${installNumberTag}.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_eth_tcp.ini -f
@@ -2718,6 +3129,8 @@ uninstall() {
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_btc_tls.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_rvn_tcp.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_rvn_tls.ini -f
+            rm /etc/supervisord.d/ccminer${installNumberTag}_gost_ergo_tcp.ini -f
+            rm /etc/supervisord.d/ccminer${installNumberTag}_gost_ergo_tls.ini -f
         fi
         supervisorctl update
     fi
@@ -2739,6 +3152,8 @@ uninstall() {
             rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_btc_tls.conf -f
             rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tcp.conf -f
             rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tls.conf -f
+            rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tcp.conf -f
+            rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tls.conf -f
         elif [ -d "/etc/supervisor/conf.d/" ]; then
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}.conf -f
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_eth_tcp.conf -f
@@ -2749,6 +3164,8 @@ uninstall() {
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_btc_tls.conf -f
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tcp.conf -f
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tls.conf -f
+            rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tcp.conf -f
+            rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tls.conf -f
         elif [ -d "/etc/supervisord.d/" ]; then
             rm /etc/supervisord.d/ccworker${installNumberTag}.ini -f
             rm /etc/supervisord.d/ccworker${installNumberTag}_gost_eth_tcp.ini -f
@@ -2759,6 +3176,8 @@ uninstall() {
             rm /etc/supervisord.d/ccworker${installNumberTag}_gost_btc_tls.ini -f
             rm /etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tcp.ini -f
             rm /etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tls.ini -f
+            rm /etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tcp.ini -f
+            rm /etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tls.ini -f
         fi
         echo "----------------------------------------------------------------"
         echo
