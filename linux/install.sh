@@ -1708,6 +1708,286 @@ ergo_miner_config() {
     fi
 }
 
+cfx_miner_config_ask() {
+    echo
+    while :; do
+        echo -e "是否开启 CFX抽水中转， 输入 [${magenta}Y或者N${none}] 按回车"
+        read -p "$(echo -e "(默认: [${cyan}N${none}]):")" enableCfxProxy
+        [[ -z $enableCfxProxy ]] && enableCfxProxy="n"
+
+        case $enableCfxProxy in
+        Y | y)
+            enableCfxProxy="y"
+            cfx_miner_config
+            break
+            ;;
+        N | n)
+            enableCfxProxy="n"
+            echo
+            echo
+            echo -e "$yellow 不启用CFX抽水中转 $none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+}
+
+cfx_miner_config() {
+    echo
+    while :; do
+        echo -e "请输入CFX矿池域名，例如 cfx.f2pool.com，不需要输入矿池端口"
+        read -p "$(echo -e "(默认: [${cyan}cfx.f2pool.com${none}]):")" cfxPoolAddress
+        [[ -z $cfxPoolAddress ]] && cfxPoolAddress="cfx.f2pool.com"
+
+        case $cfxPoolAddress in
+        *[:$]*)
+            echo
+            echo -e " 由于这个脚本太辣鸡了..所以矿池地址不能包含端口.... "
+            echo
+            error
+            ;;
+        *)
+            echo
+            echo
+            echo -e "$yellow CFX矿池地址 = ${cyan}$cfxPoolAddress${none}"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        esac
+    done
+    while :; do
+        echo -e "是否使用SSL模式连接到CFX矿池， 输入 [${magenta}Y/N${none}] 按回车"
+        read -p "$(echo -e "(默认: [${cyan}N${none}]):")" cfxPoolSslMode
+        [[ -z $cfxPoolSslMode ]] && cfxPoolSslMode="n"
+
+        case $cfxPoolSslMode in
+        Y | y)
+            cfxPoolSslMode="y"
+            echo
+            echo
+            echo -e "$yellow 使用SSL模式连接到CFX矿池 $none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        N | n)
+            cfxPoolSslMode="n"
+            echo
+            echo
+            echo -e "$yellow 使用TCP模式连接到CFX矿池 $none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    while :; do
+        if [[ "$cfxPoolSslMode" = "y" ]]; then
+            echo -e "请输入CFX矿池"$yellow"$cfxPoolAddress"$none"的SSL端口，不要使用矿池的TCP端口！！！"
+        else
+            echo -e "请输入CFX矿池"$yellow"$cfxPoolAddress"$none"的TCP端口，不要使用矿池的SSL端口！！！"
+        fi
+        read -p "$(echo -e "(默认端口: ${cyan}6800${none}):")" cfxPoolPort
+        [ -z "$cfxPoolPort" ] && cfxPoolPort=6800
+        case $cfxPoolPort in
+        [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
+            echo
+            echo
+            echo -e "$yellow CFX矿池端口 = $cyan$cfxPoolPort$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            echo
+            echo " ..端口要在1-65535之间啊哥哥....."
+            error
+            ;;
+        esac
+    done
+    local randomTcp="6800"
+    while :; do
+        echo -e "请输入CFX本地TCP中转的端口 ["$magenta"1-65535"$none"]，不能选择 "$magenta"80"$none" 或 "$magenta"443"$none" 端口"
+        read -p "$(echo -e "(默认TCP端口: ${cyan}${randomTcp}${none}):")" cfxTcpPort
+        [ -z "$cfxTcpPort" ] && cfxTcpPort=$randomTcp
+        case $cfxTcpPort in
+        80)
+            echo
+            echo " ...都说了不能选择 80 端口了咯....."
+            error
+            ;;
+        443)
+            echo
+            echo " ..都说了不能选择 443 端口了咯....."
+            error
+            ;;
+        [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
+            echo
+            echo
+            echo -e "$yellow CFX本地TCP中转端口 = $cyan$cfxTcpPort$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    local randomTls="62345"
+    while :; do
+        echo -e "请输入CFX本地SSL中转的端口 ["$magenta"1-65535"$none"]，不能选择 "$magenta"80"$none" 或 "$magenta"443"$none" 或 "$magenta"$cfxTcpPort"$none" 端口"
+        read -p "$(echo -e "(默认端口: ${cyan}${randomTls}${none}):")" cfxTlsPort
+        [ -z "$cfxTlsPort" ] && cfxTlsPort=$randomTls
+        case $cfxTlsPort in
+        80)
+            echo
+            echo " ...都说了不能选择 80 端口了咯....."
+            error
+            ;;
+        443)
+            echo
+            echo " ..都说了不能选择 443 端口了咯....."
+            error
+            ;;
+        $cfxTcpPort)
+            echo
+            echo " ..不能和 TCP端口 $cfxTcpPort 一毛一样....."
+            error
+            ;;
+        [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
+            echo
+            echo
+            echo -e "$yellow CFX本地SSL中转端口 = $cyan$cfxTlsPort$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    while :; do
+        echo -e "请输入你在矿池的CFX账户用户名"
+        read -p "$(echo -e "(一定不要输入错误，错了就抽给别人了):")" cfxUser
+        if [ -z "$cfxUser" ]; then
+            echo
+            echo
+            echo " ..一定要输入一个用户名啊....."
+        else
+            echo
+            echo
+            echo -e "$yellow CFX抽水用户名 = $cyan$cfxUser$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+        fi
+    done
+    while :; do
+        echo -e "请输入你喜欢的矿工名，抽水成功后你可以在矿池看到这个矿工名"
+        read -p "$(echo -e "(默认: [${cyan}worker${none}]):")" cfxWorker
+        [[ -z $cfxWorker ]] && cfxWorker="worker"
+        echo
+        echo
+        echo -e "$yellow CFX抽水矿工名 = ${cyan}$cfxWorker${none}"
+        echo "----------------------------------------------------------------"
+        echo
+        break
+    done
+    while :; do
+        echo -e "请输入CFX抽水比例 ["$magenta"0-95"$none"]"
+        read -p "$(echo -e "(默认: ${cyan}10${none}):")" cfxTaxPercent
+        [ -z "$cfxTaxPercent" ] && cfxTaxPercent=10
+        case $cfxTaxPercent in
+        0 | 0\.[0-9] | 0\.[0-9][0-9]* | [1-9] | [1-8][0-9] | [1-9]\.[0-9]* | [1-8][0-9]\.[0-9]* | 9[0-5] | 9[0-4]\.[0-9]*)
+            echo
+            echo
+            echo -e "$yellow CFX抽水比例 = $cyan$cfxTaxPercent%$none"
+            echo "----------------------------------------------------------------"
+            echo
+            break
+            ;;
+        *)
+            echo
+            echo " ..输入的抽水比例要在0-95之间，如果用的是整数不要加小数点....."
+            error
+            ;;
+        esac
+    done
+    while :; do
+        echo -e "是否添加第二个抽水账户 输入 [${magenta}Y/N${none}] 按回车"
+        read -p "$(echo -e "(默认: [${cyan}N${none}]):")" enableCfxSecondConfig
+        [[ -z $enableCfxSecondConfig ]] && enableCfxSecondConfig="n"
+
+        case $enableCfxSecondConfig in
+        Y | y)
+            enableCfxSecondConfig="y"
+            echo
+            echo
+            break
+            ;;
+        N | n)
+            enableCfxSecondConfig="n"
+            echo
+            echo
+            break
+            ;;
+        *)
+            error
+            ;;
+        esac
+    done
+    if [[ "$enableCfxSecondConfig" = "y" ]]; then
+        while :; do
+            echo -e "请输入你的第二个CFX钱包地址或者你在矿池的用户名"
+            read -p "$(echo -e "(一定不要输入错误，错了就抽给别人了):")" cfxSecondUser
+            if [ -z "$cfxSecondUser" ]; then
+                echo
+                echo
+                echo " ..一定要输入一个钱包地址或者用户名啊....."
+                echo
+            else
+                echo
+                echo
+                echo -e "$yellow CFX第二个抽水用户名/钱包名 = $cyan$cfxSecondUser$none"
+                echo "----------------------------------------------------------------"
+                echo
+                break
+            fi
+        done
+        while :; do
+            echo -e "请输入第二个抽水账户的CFX抽水比例 ["$magenta"0-95"$none"]"
+            read -p "$(echo -e "(默认: ${cyan}10${none}):")" cfxSecondTaxPercent
+            [ -z "$cfxSecondTaxPercent" ] && cfxSecondTaxPercent=10
+            case $cfxSecondTaxPercent in
+            0 | 0\.[0-9] | 0\.[0-9][0-9]* | [1-9] | [1-8][0-9] | [1-9]\.[0-9]* | [1-8][0-9]\.[0-9]* | 9[0-5] | 9[0-4]\.[0-9]*)
+                echo
+                echo
+                echo -e "$yellow CFX抽水比例 = $cyan$cfxSecondTaxPercent%$none"
+                echo "----------------------------------------------------------------"
+                echo
+                break
+                ;;
+            *)
+                echo
+                echo " ..输入的抽水比例要在0-95之间，如果用的是整数不要加小数点....."
+                error
+                ;;
+            esac
+        done
+    fi
+}
+
 http_logger_config_ask() {
     echo
     while :; do
@@ -1955,6 +2235,26 @@ print_all_config() {
         fi
         echo "----------------------------------------------------------------"
     fi
+    if [[ "$enableCfxProxy" = "y" ]]; then
+        echo "CFX 中转抽水配置"
+        echo -e "$yellow CFX矿池地址 = ${cyan}$cfxPoolAddress${none}"
+        if [[ "$cfxPoolSslMode" = "y" ]]; then
+            echo -e "$yellow CFX矿池连接方式 = ${cyan}SSL${none}"
+        else
+            echo -e "$yellow CFX矿池连接方式 = ${cyan}TCP${none}"
+        fi
+        echo -e "$yellow CFX矿池端口 = $cyan$cfxPoolPort$none"
+        echo -e "$yellow CFX本地TCP中转端口 = $cyan$cfxTcpPort$none"
+        echo -e "$yellow CFX本地SSL中转端口 = $cyan$cfxTlsPort$none"
+        echo -e "$yellow CFX抽水用户名/钱包名 = $cyan$cfxUser$none"
+        echo -e "$yellow CFX抽水矿工名 = ${cyan}$cfxWorker${none}"
+        echo -e "$yellow CFX抽水比例 = $cyan$cfxTaxPercent%$none"
+        if [[ "$enableCfxSecondConfig" = "y" ]]; then
+            echo -e "$yellow CFX第二个抽水用户名/钱包名 = $cyan$cfxSecondUser$none"
+            echo -e "$yellow CFX第二个账户抽水比例 = $cyan$cfxSecondTaxPercent%$none"
+        fi
+        echo "----------------------------------------------------------------"
+    fi
     if [[ "$enableHttpLog" = "y" ]]; then
         echo "网页监控平台配置"
         echo -e "$yellow 网页监控平台端口 = ${cyan}$httpLogPort${none}"
@@ -2038,6 +2338,15 @@ gost_modify_config_port() {
     else
         gostErgoTcpPort=$ergoTcpPort
         gostErgoTlsPort=$ergoTlsPort
+    fi
+    if [[ "$enableCfxProxy" = "y" ]]; then
+        gostCfxTcpPort=$cfxTcpPort
+        cfxTcpPort=$(shuf -i20001-65535 -n1)
+        gostCfxTlsPort=$cfxTlsPort
+        cfxTlsPort=$(shuf -i20001-65535 -n1)
+    else
+        gostCfxTcpPort=$cfxTcpPort
+        gostCfxTlsPort=$cfxTlsPort
     fi
 }
 
@@ -2363,6 +2672,52 @@ write_json() {
         echo "  \"ergoTaxPercent\": 6," >>$jsonPath
         echo "  \"enableErgoProxy\": false," >>$jsonPath
     fi
+    if [[ "$enableCfxProxy" = "y" ]]; then
+        echo "  \"cfxPoolAddress\": \"${cfxPoolAddress}\"," >>$jsonPath
+        if [[ "$cfxPoolSslMode" = "y" ]]; then
+            echo "  \"cfxPoolSslMode\": true," >>$jsonPath
+        else
+            echo "  \"cfxPoolSslMode\": false," >>$jsonPath
+        fi
+        echo "  \"cfxPoolPort\": ${cfxPoolPort}," >>$jsonPath
+        echo "  \"cfxTcpPort\": ${cfxTcpPort}," >>$jsonPath
+        echo "  \"cfxTlsPort\": ${cfxTlsPort}," >>$jsonPath
+        echo "  \"cfxUser\": \"${cfxUser}\"," >>$jsonPath
+        echo "  \"cfxWorker\": \"${cfxWorker}\"," >>$jsonPath
+        echo "  \"cfxTaxPercent\": ${cfxTaxPercent}," >>$jsonPath
+        if [[ "$enableCfxSecondConfig" = "y" ]]; then
+            echo "  \"cfxSecondUser\": \"${cfxSecondUser}\"," >>$jsonPath
+            echo "  \"cfxSecondTaxPercent\": ${cfxSecondTaxPercent}," >>$jsonPath
+        fi
+        echo "  \"enableCfxProxy\": true," >>$jsonPath
+        if [ "$enableGostProxy" = "y" ]; then
+            if [[ $cmd == "apt-get" ]]; then
+                ufw allow $gostCfxTcpPort
+                ufw allow $gostCfxTlsPort
+            else
+                firewall-cmd --zone=public --add-port=$gostCfxTcpPort/tcp --permanent
+                firewall-cmd --zone=public --add-port=$gostCfxTlsPort/tcp --permanent
+            fi
+        else
+            if [[ $cmd == "apt-get" ]]; then
+                ufw allow $cfxTlsPort
+                ufw allow $cfxTlsPort
+            else
+                firewall-cmd --zone=public --add-port=$cfxTlsPort/tcp --permanent
+                firewall-cmd --zone=public --add-port=$cfxTlsPort/tcp --permanent
+            fi
+        fi
+    else
+        echo "  \"cfxPoolAddress\": \"cfx.f2pool.com\"," >>$jsonPath
+        echo "  \"cfxPoolSslMode\": false," >>$jsonPath
+        echo "  \"cfxPoolPort\": 6800," >>$jsonPath
+        echo "  \"cfxTcpPort\": 6800," >>$jsonPath
+        echo "  \"cfxTlsPort\": 62345," >>$jsonPath
+        echo "  \"cfxUser\": \"UserOrAddress\"," >>$jsonPath
+        echo "  \"cfxWorker\": \"worker\"," >>$jsonPath
+        echo "  \"cfxTaxPercent\": 6," >>$jsonPath
+        echo "  \"enableCfxProxy\": false," >>$jsonPath
+    fi
     if [[ "$enableHttpLog" = "y" ]]; then
         echo "  \"httpLogPort\": ${httpLogPort}," >>$jsonPath
         echo "  \"httpLogPassword\": \"${httpLogPassword}\"," >>$jsonPath
@@ -2397,7 +2752,7 @@ write_json() {
         fi
     fi
 
-    echo "  \"version\": \"9.0.1\"" >>$jsonPath
+    echo "  \"version\": \"9.0.2\"" >>$jsonPath
     echo "}" >>$jsonPath
     if [[ $cmd == "apt-get" ]]; then
         ufw reload
@@ -2496,6 +2851,21 @@ start_write_config() {
                 echo "autostart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tls.conf
                 echo "autorestart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tls.conf
             fi
+            if [[ "$enableCfxProxy" = "y" ]]; then
+                rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tcp.conf -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostcfxtcp]" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tcp.conf
+                echo "command=${installPath}/gost -L=tcp://:${gostCfxTcpPort}/127.0.0.1:${cfxTcpPort}" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tcp.conf
+                echo "directory=${installPath}/" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tcp.conf
+                echo "autostart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tcp.conf
+                echo "autorestart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tcp.conf
+
+                rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tls.conf -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostcfxtls]" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tls.conf
+                echo "command=${installPath}/gost -L=tcp://:${gostCfxTlsPort}/127.0.0.1:${cfxTlsPort}" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tls.conf
+                echo "directory=${installPath}/" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tls.conf
+                echo "autostart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tls.conf
+                echo "autorestart=true" >>/etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tls.conf
+            fi
         fi
     elif [ -d "/etc/supervisor/conf.d/" ]; then
         rm /etc/supervisor/conf.d/ccworker${installNumberTag}.conf -f
@@ -2581,6 +2951,21 @@ start_write_config() {
                 echo "autostart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tls.conf
                 echo "autorestart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tls.conf
             fi
+            if [[ "$enableCfxProxy" = "y" ]]; then
+                rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tcp.conf -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostcfxtcp]" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tcp.conf
+                echo "command=${installPath}/gost -L=tcp://:${gostCfxTcpPort}/127.0.0.1:${cfxTcpPort}" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tcp.conf
+                echo "directory=${installPath}/" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tcp.conf
+                echo "autostart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tcp.conf
+                echo "autorestart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tcp.conf
+
+                rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tls.conf -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostcfxtls]" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tls.conf
+                echo "command=${installPath}/gost -L=tcp://:${gostCfxTlsPort}/127.0.0.1:${cfxTlsPort}" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tls.conf
+                echo "directory=${installPath}/" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tls.conf
+                echo "autostart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tls.conf
+                echo "autorestart=true" >>/etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tls.conf
+            fi
         fi
     elif [ -d "/etc/supervisord.d/" ]; then
         rm /etc/supervisord.d/ccworker${installNumberTag}.ini -f
@@ -2665,6 +3050,21 @@ start_write_config() {
                 echo "directory=${installPath}/" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tls.ini
                 echo "autostart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tls.ini
                 echo "autorestart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tls.ini
+            fi
+            if [[ "$enableCfxProxy" = "y" ]]; then
+                rm /etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tcp.ini -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostcfxtcp]" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tcp.ini
+                echo "command=${installPath}/gost -L=tcp://:${gostCfxTcpPort}/127.0.0.1:${cfxTcpPort}" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tcp.ini
+                echo "directory=${installPath}/" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tcp.ini
+                echo "autostart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tcp.ini
+                echo "autorestart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tcp.ini
+
+                rm /etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tls.ini -f
+                echo "[program:ccworkertaxproxy${installNumberTag}gostcfxtls]" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tls.ini
+                echo "command=${installPath}/gost -L=tcp://:${gostCfxTlsPort}/127.0.0.1:${cfxTlsPort}" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tls.ini
+                echo "directory=${installPath}/" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tls.ini
+                echo "autostart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tls.ini
+                echo "autorestart=true" >>/etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tls.ini
             fi
         fi
     else
@@ -2893,6 +3293,8 @@ install() {
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_rvn_tls.conf -f
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_ergo_tcp.conf -f
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_ergo_tls.conf -f
+            rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_cfx_tcp.conf -f
+            rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_cfx_tls.conf -f
         elif [ -d "/etc/supervisor/conf.d/" ]; then
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_eth_tcp.conf -f
@@ -2905,6 +3307,8 @@ install() {
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_rvn_tls.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_ergo_tcp.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_ergo_tls.conf -f
+            rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_cfx_tcp.conf -f
+            rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_cfx_tls.conf -f
         elif [ -d "/etc/supervisord.d/" ]; then
             rm /etc/supervisord.d/ccminer${installNumberTag}.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_eth_tcp.ini -f
@@ -2917,6 +3321,8 @@ install() {
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_rvn_tls.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_ergo_tcp.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_ergo_tls.ini -f
+            rm /etc/supervisord.d/ccminer${installNumberTag}_gost_cfx_tcp.ini -f
+            rm /etc/supervisord.d/ccminer${installNumberTag}_gost_cfx_tls.ini -f
         fi
         supervisorctl update
     fi
@@ -2927,6 +3333,7 @@ install() {
     btc_miner_config_ask
     rvn_miner_config_ask
     ergo_miner_config_ask
+    cfx_miner_config_ask
     http_logger_config_ask
     gost_config_ask
 
@@ -3107,6 +3514,8 @@ uninstall() {
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_rvn_tls.conf -f
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_ergo_tcp.conf -f
             rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_ergo_tls.conf -f
+            rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_cfx_tcp.conf -f
+            rm /etc/supervisor/conf/ccminer${installNumberTag}_gost_cfx_tls.conf -f
         elif [ -d "/etc/supervisor/conf.d/" ]; then
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_eth_tcp.conf -f
@@ -3119,6 +3528,8 @@ uninstall() {
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_rvn_tls.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_ergo_tcp.conf -f
             rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_ergo_tls.conf -f
+            rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_cfx_tcp.conf -f
+            rm /etc/supervisor/conf.d/ccminer${installNumberTag}_gost_cfx_tls.conf -f
         elif [ -d "/etc/supervisord.d/" ]; then
             rm /etc/supervisord.d/ccminer${installNumberTag}.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_eth_tcp.ini -f
@@ -3131,6 +3542,8 @@ uninstall() {
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_rvn_tls.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_ergo_tcp.ini -f
             rm /etc/supervisord.d/ccminer${installNumberTag}_gost_ergo_tls.ini -f
+            rm /etc/supervisord.d/ccminer${installNumberTag}_gost_cfx_tcp.ini -f
+            rm /etc/supervisord.d/ccminer${installNumberTag}_gost_cfx_tls.ini -f
         fi
         supervisorctl update
     fi
@@ -3154,6 +3567,8 @@ uninstall() {
             rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_rvn_tls.conf -f
             rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tcp.conf -f
             rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_ergo_tls.conf -f
+            rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tcp.conf -f
+            rm /etc/supervisor/conf/ccworker${installNumberTag}_gost_cfx_tls.conf -f
         elif [ -d "/etc/supervisor/conf.d/" ]; then
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}.conf -f
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_eth_tcp.conf -f
@@ -3166,6 +3581,8 @@ uninstall() {
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_rvn_tls.conf -f
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tcp.conf -f
             rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_ergo_tls.conf -f
+            rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tcp.conf -f
+            rm /etc/supervisor/conf.d/ccworker${installNumberTag}_gost_cfx_tls.conf -f
         elif [ -d "/etc/supervisord.d/" ]; then
             rm /etc/supervisord.d/ccworker${installNumberTag}.ini -f
             rm /etc/supervisord.d/ccworker${installNumberTag}_gost_eth_tcp.ini -f
@@ -3178,6 +3595,8 @@ uninstall() {
             rm /etc/supervisord.d/ccworker${installNumberTag}_gost_rvn_tls.ini -f
             rm /etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tcp.ini -f
             rm /etc/supervisord.d/ccworker${installNumberTag}_gost_ergo_tls.ini -f
+            rm /etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tcp.ini -f
+            rm /etc/supervisord.d/ccworker${installNumberTag}_gost_cfx_tls.ini -f
         fi
         echo "----------------------------------------------------------------"
         echo
@@ -3197,7 +3616,7 @@ uninstall() {
 clear
 while :; do
     echo
-    echo "....... CaoCaoMinerTaxProxy 9.0.0版 防DDos CC 极致优化版<双钱包> 一键安装脚本 & 管理脚本 by 曹操 ......."
+    echo "....... CaoCaoMinerTaxProxy 9.0.2版 防DDos CC 极致优化版<双钱包> 一键安装脚本 & 管理脚本 by 曹操 ......."
     echo
     echo " 1. 安装"
     echo

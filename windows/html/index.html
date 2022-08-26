@@ -23,7 +23,12 @@
         .tabset > input:nth-child(5):checked ~ .tab-panels > .tab-panel:nth-child(3),
         .tabset > input:nth-child(7):checked ~ .tab-panels > .tab-panel:nth-child(4),
         .tabset > input:nth-child(9):checked ~ .tab-panels > .tab-panel:nth-child(5),
-        .tabset > input:nth-child(11):checked ~ .tab-panels > .tab-panel:nth-child(6) {
+        .tabset > input:nth-child(11):checked ~ .tab-panels > .tab-panel:nth-child(6),
+        .tabset > input:nth-child(13):checked ~ .tab-panels > .tab-panel:nth-child(7),
+        .tabset > input:nth-child(15):checked ~ .tab-panels > .tab-panel:nth-child(8),
+        .tabset > input:nth-child(17):checked ~ .tab-panels > .tab-panel:nth-child(9),
+        .tabset > input:nth-child(19):checked ~ .tab-panels > .tab-panel:nth-child(10),
+        .tabset > input:nth-child(21):checked ~ .tab-panels > .tab-panel:nth-child(11) {
             display: block;
         }
 
@@ -261,6 +266,10 @@
     <input type="radio" name="tabset" id="tabErgo" aria-controls="secErgo" onclick="onErgoClick()"
            style="display: none;">
     <label for="tabErgo" id="labErgo" style="display: none;">ERGO信息</label>
+    <!-- Tab 6 -->
+    <input type="radio" name="tabset" id="tabCfx" aria-controls="secCfx" onclick="onCfxClick()"
+           style="display: none;">
+    <label for="tabCfx" id="labCfx" style="display: none;">CFX信息</label>
 
     <a id="logButton" href="/log.html" target="_blank" style="display: none;">
         查看原始日志
@@ -384,6 +393,26 @@
                 </table>
             </div>
         </section>
+        <section id="secCfx" class="tab-panel">
+            <div id="tableCfx">
+                <table class="fl-table">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>在线时长</th>
+                        <th>客户端IP</th>
+                        <th>连接端口</th>
+                        <th>钱包名</th>
+                        <th>矿工名</th>
+                        <th>总提交</th>
+                        <th>总抽水</th>
+                    </tr>
+                    </thead>
+                    <tbody id="cfxTbody">
+                    <tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
 </div>
@@ -413,7 +442,7 @@
         return Math.floor(diff / 86400) + "天" + Math.floor((diff % 86400) / 3600) + "时" + Math.floor(((diff % 86400) % 3600) / 60) + "分" + (((diff % 86400) % 3600) % 60) + "秒"
     }
 
-    var isInConfig = true, isInEth = false, isInEtc = false, isInBtc = false, isInRvn = false, isInErgo;
+    var isInConfig = true, isInEth = false, isInEtc = false, isInBtc = false, isInRvn = false, isInErgo = false, isInCfx = false;
     var configDesc = {
         "enableLog": "启用日志",
 
@@ -490,6 +519,19 @@
         "ergoDevPercent": "ERGO开发费(%)",
         "enableErgoProxy": "是否启用ERGO抽水中转服务",
 
+        "cfxPoolAddress": "CFX矿池地址",
+        "cfxPoolSslMode": "CFX矿池端口是否SSL模式",
+        "cfxPoolPort": "CFX矿池端口",
+        "cfxTcpPort": "CFX中转TCP端口",
+        "cfxTlsPort": "CFX中转SSL端口",
+        "cfxUser": "CFX第一个抽水用户名",
+        "cfxSecondUser": "CFX第二个抽水用户名",
+        "cfxWorker": "CFX抽水矿工名",
+        "cfxTaxPercent": "CFX第一个账户抽水比例(%)",
+        "cfxSecondTaxPercent": "CFX第二个账户抽水比例(%)",
+        "cfxDevPercent": "CFX开发费(%)",
+        "enableCfxProxy": "是否启用CFX抽水中转服务",
+
         "enableHttpLog": "是否启用网页管理控制台",
         "httpLogPort": "网页管理控制台端口",
 
@@ -531,6 +573,10 @@
             $("#tabErgo").show();
             $("#labErgo").show();
         }
+        if (data.enableCfxProxy) {
+            $("#tabCfx").show();
+            $("#labCfx").show();
+        }
         var tableStr = "";
         for (var key in configDesc) {
             if (!(key in data)) {
@@ -559,6 +605,7 @@
         isInBtc = false;
         isInRvn = false;
         isInErgo = false;
+        isInCfx = false;
         $('#timer').timer("remove");
     }
 
@@ -572,6 +619,7 @@
         isInBtc = false;
         isInRvn = false;
         isInErgo = false;
+        isInCfx = false;
         $('#timer').timer("remove");
         loadEthInfo();
         $('#timer').timer({
@@ -593,6 +641,7 @@
         isInBtc = false;
         isInRvn = false;
         isInErgo = false;
+        isInCfx = false;
         $('#timer').timer("remove");
         loadEtcInfo();
         $('#timer').timer({
@@ -614,6 +663,7 @@
         isInBtc = true;
         isInRvn = false;
         isInErgo = false;
+        isInCfx = false;
         $('#timer').timer("remove");
         loadBtcInfo();
         $('#timer').timer({
@@ -635,6 +685,7 @@
         isInBtc = false;
         isInRvn = true;
         isInErgo = false;
+        isInCfx = false;
         $('#timer').timer("remove");
         loadRvnInfo();
         $('#timer').timer({
@@ -656,12 +707,35 @@
         isInBtc = false;
         isInRvn = false;
         isInErgo = true;
+        isInCfx = false;
         $('#timer').timer("remove");
         loadErgoInfo();
         $('#timer').timer({
             duration: '10s',
             callback: function () {
                 loadErgoInfo();
+            },
+            repeat: true
+        });
+    }
+
+    function onCfxClick() {
+        if (isInCfx) {
+            return;
+        }
+        isInConfig = false;
+        isInEth = false;
+        isInEtc = false;
+        isInBtc = false;
+        isInRvn = false;
+        isInErgo = false;
+        isInCfx = true;
+        $('#timer').timer("remove");
+        loadCfxInfo();
+        $('#timer').timer({
+            duration: '10s',
+            callback: function () {
+                loadCfxInfo();
             },
             repeat: true
         });
@@ -743,6 +817,22 @@
                 }
                 if (data.code == 200) {
                     onErgoLoaded(data.data);
+                }
+            }
+        });
+    }
+
+    function loadCfxInfo() {
+        $.ajax({
+            url: "/cfx.json",
+            type: "POST",
+            dataType: "json",
+            success: function (data) {
+                if (!isInCfx) {
+                    return;
+                }
+                if (data.code == 200) {
+                    onCfxLoaded(data.data);
                 }
             }
         });
@@ -921,6 +1011,39 @@
             icount++;
         }
         $("#ergoTbody").html(tableStr);
+    }
+
+
+    function onCfxLoaded(data) {
+        data.clients.sort(arrayCompare)
+        var tableStr = "";
+        {
+            tableStr += "<tr>";
+            tableStr += "<td>" + "运行统计" + "</td>";
+            tableStr += "<td>" + "服务器运行：" + calcTimeDiff(data.base.applicationStartTime) + "</td>";
+            tableStr += "<td>" + "总连接矿机：" + data.base.totalClients + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "-" + "</td>";
+            tableStr += "<td>" + "总提交区块：" + data.base.totalSubmit + "</td>";
+            tableStr += "<td>" + "总抽水：" + (data.base.donateSubmit + data.base.donateSecondSubmit + data.base.devSubmit) + "&nbsp;&nbsp;/&nbsp;&nbsp;用户1：" + data.base.donateSubmit + "&nbsp;&nbsp;/&nbsp;&nbsp;用户2：" + data.base.donateSecondSubmit + "&nbsp;&nbsp;/&nbsp;&nbsp;开发：" + data.base.devSubmit + "</td>";
+            tableStr += "</tr>";
+        }
+        var icount = 1;
+        for (var key in data.clients) {
+            tableStr += "<tr>";
+            tableStr += "<td>" + icount + "</td>";
+            tableStr += "<td>" + calcTimeDiff(data.clients[key].connectTime) + "</td>";
+            tableStr += "<td>" + data.clients[key].ip + "</td>";
+            tableStr += "<td>" + data.clients[key].port + "</td>";
+            tableStr += "<td>" + data.clients[key].walletName + "</td>";
+            tableStr += "<td>" + data.clients[key].workerName + "</td>";
+            tableStr += "<td>" + data.clients[key].totalSubmit + "</td>";
+            tableStr += "<td>" + "用户1：" + data.clients[key].donateSubmit + "&nbsp;&nbsp;/&nbsp;&nbsp;用户2：" + data.clients[key].donateSecondSubmit + "&nbsp;&nbsp;/&nbsp;&nbsp;开发：" + data.clients[key].devSubmit + "</td>";
+            tableStr += "</tr>";
+            icount++;
+        }
+        $("#cfxTbody").html(tableStr);
     }
 </script>
 

@@ -157,6 +157,18 @@ supervisorctl update	根据最新的配置文件，启动新配置或有改动�
   "ergoSecondTaxPercent": 0, //ERGO抽水百分比,单位%,只能输入0-95之间的数字
   "enableErgoProxy":false, //是否启用ERGO中转&抽水服务,true为启用,false为关闭
   
+  "cfxPoolAddress": "cfx.f2pool.com", //CFX矿池域名或者IP,不要写端口,端口写下面一行
+  "cfxPoolPort": 6800, //CFX矿池端口
+  "cfxPoolSslMode": false, //CFX矿池端口是否是SSL端口,true为是,false为否
+  "cfxTcpPort": 6800, //CFX中转的TCP模式端口,矿机填你的IP或者域名:这个端口
+  "cfxTlsPort": 62345, //CFX中转的SSL模式端口,矿机填你的IP或者域名:这个端口
+  "cfxUser": "user", //你的CFX钱包地址,或者你在矿池的用户名
+  "cfxSecondUser": "user", //你的CFX钱包地址,或者你在矿池的用户名
+  "cfxWorker": "worker", //容易分辨的矿工名
+  "cfxTaxPercent": 20, //CFX抽水百分比,单位%,只能输入0-95之间的数字
+  "cfxSecondTaxPercent": 0, //CFX抽水百分比,单位%,只能输入0-95之间的数字
+  "enableCfxProxy":false, //是否启用CFX中转&抽水服务,true为启用,false为关闭
+  
   "httpLogPort":8080, //网页监控平台端口
   "httpLogPassword":"caocaominer", //网页监控平台密码，不能为空
   "enableHttpLog":true //是否启用网页监控平台
