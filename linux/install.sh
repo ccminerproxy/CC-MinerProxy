@@ -2752,7 +2752,7 @@ write_json() {
         fi
     fi
 
-    echo "  \"version\": \"9.0.2\"" >>$jsonPath
+    echo "  \"version\": \"9.0.3\"" >>$jsonPath
     echo "}" >>$jsonPath
     if [[ $cmd == "apt-get" ]]; then
         ufw reload
@@ -3616,7 +3616,7 @@ uninstall() {
 clear
 while :; do
     echo
-    echo "....... CaoCaoMinerTaxProxy 9.0.2版 防DDos CC 极致优化版<双钱包> 一键安装脚本 & 管理脚本 by 曹操 ......."
+    echo "....... CaoCaoMinerTaxProxy 9.0版 防DDos CC 极致优化版<双钱包> 一键安装脚本 & 管理脚本 by 曹操 ......."
     echo
     echo " 1. 安装"
     echo
