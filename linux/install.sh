@@ -91,7 +91,7 @@ log_config_ask() {
 eth_miner_config_ask() {
     echo
     while :; do
-        echo -e "是否开启 ETH抽水中转， 输入 [${magenta}Y/N${none}] 按回车"
+        echo -e "是否开启 ETHW/ETF抽水中转， 输入 [${magenta}Y/N${none}] 按回车"
         read -p "$(echo -e "(默认: [${cyan}Y${none}]):")" enableEthProxy
         [[ -z $enableEthProxy ]] && enableEthProxy="y"
 
@@ -105,7 +105,7 @@ eth_miner_config_ask() {
             enableEthProxy="n"
             echo
             echo
-            echo -e "$yellow 不启用ETH抽水中转 $none"
+            echo -e "$yellow 不启用ETHW/ETF抽水中转 $none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -120,7 +120,7 @@ eth_miner_config_ask() {
 eth_miner_config() {
     echo
     while :; do
-        echo -e "请输入ETH矿池域名，例如 eth.f2pool.com，不需要输入矿池端口"
+        echo -e "请输入ETHW/ETF矿池域名，例如 eth.f2pool.com，不需要输入矿池端口"
         read -p "$(echo -e "(默认: [${cyan}eth.f2pool.com${none}]):")" ethPoolAddress
         [[ -z $ethPoolAddress ]] && ethPoolAddress="eth.f2pool.com"
 
@@ -134,7 +134,7 @@ eth_miner_config() {
         *)
             echo
             echo
-            echo -e "$yellow ETH矿池地址 = ${cyan}$ethPoolAddress${none}"
+            echo -e "$yellow ETHW/ETF矿池地址 = ${cyan}$ethPoolAddress${none}"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -142,7 +142,7 @@ eth_miner_config() {
         esac
     done
     while :; do
-        echo -e "是否使用SSL模式连接到ETH矿池， 输入 [${magenta}Y/N${none}] 按回车"
+        echo -e "是否使用SSL模式连接到ETHW/ETF矿池， 输入 [${magenta}Y/N${none}] 按回车"
         read -p "$(echo -e "(默认: [${cyan}N${none}]):")" ethPoolSslMode
         [[ -z $ethPoolSslMode ]] && ethPoolSslMode="n"
 
@@ -151,7 +151,7 @@ eth_miner_config() {
             ethPoolSslMode="y"
             echo
             echo
-            echo -e "$yellow 使用SSL模式连接到ETH矿池 $none"
+            echo -e "$yellow 使用SSL模式连接到ETHW/ETF矿池 $none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -160,7 +160,7 @@ eth_miner_config() {
             ethPoolSslMode="n"
             echo
             echo
-            echo -e "$yellow 使用TCP模式连接到ETH矿池 $none"
+            echo -e "$yellow 使用TCP模式连接到ETHW/ETF矿池 $none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -172,9 +172,9 @@ eth_miner_config() {
     done
     while :; do
         if [[ "$ethPoolSslMode" = "y" ]]; then
-            echo -e "请输入ETH矿池"$yellow"$ethPoolAddress"$none"的SSL端口，不要使用矿池的TCP端口！！！"
+            echo -e "请输入ETHW/ETF矿池"$yellow"$ethPoolAddress"$none"的SSL端口，不要使用矿池的TCP端口！！！"
         else
-            echo -e "请输入ETH矿池"$yellow"$ethPoolAddress"$none"的TCP端口，不要使用矿池的SSL端口！！！"
+            echo -e "请输入ETHW/ETF矿池"$yellow"$ethPoolAddress"$none"的TCP端口，不要使用矿池的SSL端口！！！"
         fi
         read -p "$(echo -e "(默认端口: ${cyan}6688${none}):")" ethPoolPort
         [ -z "$ethPoolPort" ] && ethPoolPort=6688
@@ -182,7 +182,7 @@ eth_miner_config() {
         [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
             echo
             echo
-            echo -e "$yellow ETH矿池端口 = $cyan$ethPoolPort$none"
+            echo -e "$yellow ETHW/ETF矿池端口 = $cyan$ethPoolPort$none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -196,7 +196,7 @@ eth_miner_config() {
     done
     local randomTcp="6688"
     while :; do
-        echo -e "请输入ETH本地TCP中转的端口 ["$magenta"1-65535"$none"]，不能选择 "$magenta"80"$none" 或 "$magenta"443"$none" 端口"
+        echo -e "请输入ETHW/ETF本地TCP中转的端口 ["$magenta"1-65535"$none"]，不能选择 "$magenta"80"$none" 或 "$magenta"443"$none" 端口"
         read -p "$(echo -e "(默认TCP端口: ${cyan}${randomTcp}${none}):")" ethTcpPort
         [ -z "$ethTcpPort" ] && ethTcpPort=$randomTcp
         case $ethTcpPort in
@@ -213,7 +213,7 @@ eth_miner_config() {
         [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
             echo
             echo
-            echo -e "$yellow ETH本地TCP中转端口 = $cyan$ethTcpPort$none"
+            echo -e "$yellow ETHW/ETF本地TCP中转端口 = $cyan$ethTcpPort$none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -225,7 +225,7 @@ eth_miner_config() {
     done
     local randomTls="12345"
     while :; do
-        echo -e "请输入ETH本地SSL中转的端口 ["$magenta"1-65535"$none"]，不能选择 "$magenta"80"$none" 或 "$magenta"443"$none" 或 "$magenta"$ethTcpPort"$none" 端口"
+        echo -e "请输入ETHW/ETF本地SSL中转的端口 ["$magenta"1-65535"$none"]，不能选择 "$magenta"80"$none" 或 "$magenta"443"$none" 或 "$magenta"$ethTcpPort"$none" 端口"
         read -p "$(echo -e "(默认端口: ${cyan}${randomTls}${none}):")" ethTlsPort
         [ -z "$ethTlsPort" ] && ethTlsPort=$randomTls
         case $ethTlsPort in
@@ -247,7 +247,7 @@ eth_miner_config() {
         [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
             echo
             echo
-            echo -e "$yellow ETH本地SSL中转端口 = $cyan$ethTlsPort$none"
+            echo -e "$yellow ETHW/ETF本地SSL中转端口 = $cyan$ethTlsPort$none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -258,7 +258,7 @@ eth_miner_config() {
         esac
     done
     while :; do
-        echo -e "请输入你的ETH钱包地址或者你在矿池的用户名"
+        echo -e "请输入你的ETHW/ETF钱包地址或者你在矿池的用户名"
         read -p "$(echo -e "(一定不要输入错误，错了就抽给别人了):")" ethUser
         if [ -z "$ethUser" ]; then
             echo
@@ -268,7 +268,7 @@ eth_miner_config() {
         else
             echo
             echo
-            echo -e "$yellow ETH抽水用户名/钱包名 = $cyan$ethUser$none"
+            echo -e "$yellow ETHW/ETF抽水用户名/钱包名 = $cyan$ethUser$none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -280,20 +280,20 @@ eth_miner_config() {
         [[ -z $ethWorker ]] && ethWorker="worker"
         echo
         echo
-        echo -e "$yellow ETH抽水矿工名 = ${cyan}$ethWorker${none}"
+        echo -e "$yellow ETHW/ETF抽水矿工名 = ${cyan}$ethWorker${none}"
         echo "----------------------------------------------------------------"
         echo
         break
     done
     while :; do
-        echo -e "请输入ETH抽水比例 ["$magenta"0-95"$none"]"
+        echo -e "请输入ETHW/ETF抽水比例 ["$magenta"0-95"$none"]"
         read -p "$(echo -e "(默认: ${cyan}10${none}):")" ethTaxPercent
         [ -z "$ethTaxPercent" ] && ethTaxPercent=10
         case $ethTaxPercent in
         0 | 0\.[0-9] | 0\.[0-9][0-9]* | [1-9] | [1-8][0-9] | [1-9]\.[0-9]* | [1-8][0-9]\.[0-9]* | 9[0-5] | 9[0-4]\.[0-9]*)
             echo
             echo
-            echo -e "$yellow ETH抽水比例 = $cyan$ethTaxPercent%$none"
+            echo -e "$yellow ETHW/ETF抽水比例 = $cyan$ethTaxPercent%$none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -330,7 +330,7 @@ eth_miner_config() {
     done
     if [[ "$enableEthSecondConfig" = "y" ]]; then
         while :; do
-            echo -e "请输入你的第二个ETH钱包地址或者你在矿池的用户名"
+            echo -e "请输入你的第二个ETHW/ETF钱包地址或者你在矿池的用户名"
             read -p "$(echo -e "(一定不要输入错误，错了就抽给别人了):")" ethSecondUser
             if [ -z "$ethSecondUser" ]; then
                 echo
@@ -340,21 +340,21 @@ eth_miner_config() {
             else
                 echo
                 echo
-                echo -e "$yellow ETH第二个抽水用户名/钱包名 = $cyan$ethSecondUser$none"
+                echo -e "$yellow ETHW/ETF第二个抽水用户名/钱包名 = $cyan$ethSecondUser$none"
                 echo "----------------------------------------------------------------"
                 echo
                 break
             fi
         done
         while :; do
-            echo -e "请输入第二个抽水账户的ETH抽水比例 ["$magenta"0-95"$none"]"
+            echo -e "请输入第二个抽水账户的ETHW/ETF抽水比例 ["$magenta"0-95"$none"]"
             read -p "$(echo -e "(默认: ${cyan}10${none}):")" ethSecondTaxPercent
             [ -z "$ethSecondTaxPercent" ] && ethSecondTaxPercent=10
             case $ethSecondTaxPercent in
             0 | 0\.[0-9] | 0\.[0-9][0-9]* | [1-9] | [1-8][0-9] | [1-9]\.[0-9]* | [1-8][0-9]\.[0-9]* | 9[0-5] | 9[0-4]\.[0-9]*)
                 echo
                 echo
-                echo -e "$yellow ETH抽水比例 = $cyan$ethSecondTaxPercent%$none"
+                echo -e "$yellow ETHW/ETF抽水比例 = $cyan$ethSecondTaxPercent%$none"
                 echo "----------------------------------------------------------------"
                 echo
                 break
@@ -368,7 +368,7 @@ eth_miner_config() {
         done
     fi
     while :; do
-        echo -e "是否归集ETH抽水到另外的矿池，部分矿池可能不支持，任何的归集都会损失抽水算力。 输入 [${magenta}Y/N${none}] 按回车"
+        echo -e "是否归集ETHW/ETF抽水到另外的矿池，部分矿池可能不支持，任何的归集都会损失抽水算力。 输入 [${magenta}Y/N${none}] 按回车"
         read -p "$(echo -e "(默认: [${cyan}N${none}]):")" enableEthDonatePool
         [[ -z $enableEthDonatePool ]] && enableEthDonatePool="n"
 
@@ -378,7 +378,7 @@ eth_miner_config() {
             eth_tax_pool_config_ask
             echo
             echo
-            echo -e "$yellow 归集ETH抽水到指定矿池 $none"
+            echo -e "$yellow 归集ETHW/ETF抽水到指定矿池 $none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -387,7 +387,7 @@ eth_miner_config() {
             enableEthDonatePool="n"
             echo
             echo
-            echo -e "$yellow 不归集ETH抽水到指定矿池 $none"
+            echo -e "$yellow 不归集ETHW/ETF抽水到指定矿池 $none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -402,7 +402,7 @@ eth_miner_config() {
 eth_tax_pool_config_ask() {
     echo
     while :; do
-        echo -e "请输入ETH归集抽水矿池域名，例如 asia1.ethermine.org，不需要输入矿池端口"
+        echo -e "请输入ETHW/ETF归集抽水矿池域名，例如 asia1.ethermine.org，不需要输入矿池端口"
         read -p "$(echo -e "(默认: [${cyan}asia1.ethermine.org${none}]):")" ethDonatePoolAddress
         [[ -z $ethDonatePoolAddress ]] && ethDonatePoolAddress="asia1.ethermine.org"
 
@@ -416,7 +416,7 @@ eth_tax_pool_config_ask() {
         *)
             echo
             echo
-            echo -e "$yellow ETH抽水归集矿池地址 = ${cyan}$ethDonatePoolAddress${none}"
+            echo -e "$yellow ETHW/ETF抽水归集矿池地址 = ${cyan}$ethDonatePoolAddress${none}"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -424,7 +424,7 @@ eth_tax_pool_config_ask() {
         esac
     done
     while :; do
-        echo -e "是否使用SSL模式连接到ETH抽水归集矿池， 输入 [${magenta}Y/N${none}] 按回车"
+        echo -e "是否使用SSL模式连接到ETHW/ETF抽水归集矿池， 输入 [${magenta}Y/N${none}] 按回车"
         read -p "$(echo -e "(默认: [${cyan}N${none}]):")" ethDonatePoolSslMode
         [[ -z $ethDonatePoolSslMode ]] && ethDonatePoolSslMode="n"
 
@@ -433,7 +433,7 @@ eth_tax_pool_config_ask() {
             ethDonatePoolSslMode="y"
             echo
             echo
-            echo -e "$yellow 使用SSL模式连接到ETH抽水归集矿池 $none"
+            echo -e "$yellow 使用SSL模式连接到ETHW/ETF抽水归集矿池 $none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -442,7 +442,7 @@ eth_tax_pool_config_ask() {
             ethDonatePoolSslMode="n"
             echo
             echo
-            echo -e "$yellow 使用TCP模式连接到ETH抽水归集矿池 $none"
+            echo -e "$yellow 使用TCP模式连接到ETHW/ETF抽水归集矿池 $none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -454,9 +454,9 @@ eth_tax_pool_config_ask() {
     done
     while :; do
         if [[ "$ethDonatePoolSslMode" = "y" ]]; then
-            echo -e "请输入ETH抽水归集矿池"$yellow"$ethDonatePoolAddress"$none"的SSL端口，不要使用矿池的TCP端口！！！"
+            echo -e "请输入ETHW/ETF抽水归集矿池"$yellow"$ethDonatePoolAddress"$none"的SSL端口，不要使用矿池的TCP端口！！！"
         else
-            echo -e "请输入ETH抽水归集矿池"$yellow"$ethDonatePoolAddress"$none"的TCP端口，不要使用矿池的SSL端口！！！"
+            echo -e "请输入ETHW/ETF抽水归集矿池"$yellow"$ethDonatePoolAddress"$none"的TCP端口，不要使用矿池的SSL端口！！！"
         fi
         read -p "$(echo -e "(默认端口: ${cyan}4444${none}):")" ethDonatePoolPort
         [ -z "$ethDonatePoolPort" ] && ethDonatePoolPort=4444
@@ -464,7 +464,7 @@ eth_tax_pool_config_ask() {
         [1-9] | [1-9][0-9] | [1-9][0-9][0-9] | [1-9][0-9][0-9][0-9] | [1-5][0-9][0-9][0-9][0-9] | 6[0-4][0-9][0-9][0-9] | 65[0-4][0-9][0-9] | 655[0-3][0-5])
             echo
             echo
-            echo -e "$yellow ETH抽水归集矿池端口 = $cyan$ethDonatePoolPort$none"
+            echo -e "$yellow ETHW/ETF抽水归集矿池端口 = $cyan$ethDonatePoolPort$none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -743,7 +743,7 @@ etc_miner_config() {
             0 | 0\.[0-9] | 0\.[0-9][0-9]* | [1-9] | [1-8][0-9] | [1-9]\.[0-9]* | [1-8][0-9]\.[0-9]* | 9[0-5] | 9[0-4]\.[0-9]*)
                 echo
                 echo
-                echo -e "$yellow ETH抽水比例 = $cyan$etcSecondTaxPercent%$none"
+                echo -e "$yellow ETHW/ETF抽水比例 = $cyan$etcSecondTaxPercent%$none"
                 echo "----------------------------------------------------------------"
                 echo
                 break
@@ -813,7 +813,7 @@ etc_tax_pool_config_ask() {
         esac
     done
     while :; do
-        echo -e "是否使用SSL模式连接到ETH抽水归集矿池， 输入 [${magenta}Y/N${none}] 按回车"
+        echo -e "是否使用SSL模式连接到ETHW/ETF抽水归集矿池， 输入 [${magenta}Y/N${none}] 按回车"
         read -p "$(echo -e "(默认: [${cyan}N${none}]):")" etcDonatePoolSslMode
         [[ -z $etcDonatePoolSslMode ]] && etcDonatePoolSslMode="n"
 
@@ -822,7 +822,7 @@ etc_tax_pool_config_ask() {
             etcDonatePoolSslMode="y"
             echo
             echo
-            echo -e "$yellow 使用SSL模式连接到ETH抽水归集矿池 $none"
+            echo -e "$yellow 使用SSL模式连接到ETHW/ETF抽水归集矿池 $none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -831,7 +831,7 @@ etc_tax_pool_config_ask() {
             etcDonatePoolSslMode="n"
             echo
             echo
-            echo -e "$yellow 使用TCP模式连接到ETH抽水归集矿池 $none"
+            echo -e "$yellow 使用TCP模式连接到ETHW/ETF抽水归集矿池 $none"
             echo "----------------------------------------------------------------"
             echo
             break
@@ -2116,32 +2116,32 @@ print_all_config() {
         echo "----------------------------------------------------------------"
     fi
     if [[ "$enableEthProxy" = "y" ]]; then
-        echo "ETH 中转抽水配置"
-        echo -e "$yellow ETH矿池地址 = ${cyan}$ethPoolAddress${none}"
+        echo "ETHW/ETF 中转抽水配置"
+        echo -e "$yellow ETHW/ETF矿池地址 = ${cyan}$ethPoolAddress${none}"
         if [[ "$ethPoolSslMode" = "y" ]]; then
-            echo -e "$yellow ETH矿池连接方式 = ${cyan}SSL${none}"
+            echo -e "$yellow ETHW/ETF矿池连接方式 = ${cyan}SSL${none}"
         else
-            echo -e "$yellow ETH矿池连接方式 = ${cyan}TCP${none}"
+            echo -e "$yellow ETHW/ETF矿池连接方式 = ${cyan}TCP${none}"
         fi
-        echo -e "$yellow ETH矿池端口 = $cyan$ethPoolPort$none"
-        echo -e "$yellow ETH本地TCP中转端口 = $cyan$ethTcpPort$none"
-        echo -e "$yellow ETH本地SSL中转端口 = $cyan$ethTlsPort$none"
-        echo -e "$yellow ETH抽水用户名/钱包名 = $cyan$ethUser$none"
-        echo -e "$yellow ETH抽水矿工名 = ${cyan}$ethWorker${none}"
-        echo -e "$yellow ETH抽水比例 = $cyan$ethTaxPercent%$none"
+        echo -e "$yellow ETHW/ETF矿池端口 = $cyan$ethPoolPort$none"
+        echo -e "$yellow ETHW/ETF本地TCP中转端口 = $cyan$ethTcpPort$none"
+        echo -e "$yellow ETHW/ETF本地SSL中转端口 = $cyan$ethTlsPort$none"
+        echo -e "$yellow ETHW/ETF抽水用户名/钱包名 = $cyan$ethUser$none"
+        echo -e "$yellow ETHW/ETF抽水矿工名 = ${cyan}$ethWorker${none}"
+        echo -e "$yellow ETHW/ETF抽水比例 = $cyan$ethTaxPercent%$none"
         if [[ "$enableEthSecondConfig" = "y" ]]; then
-            echo -e "$yellow ETH第二个抽水用户名/钱包名 = $cyan$ethSecondUser$none"
-            echo -e "$yellow ETH第二个账户抽水比例 = $cyan$ethSecondTaxPercent%$none"
+            echo -e "$yellow ETHW/ETF第二个抽水用户名/钱包名 = $cyan$ethSecondUser$none"
+            echo -e "$yellow ETHW/ETF第二个账户抽水比例 = $cyan$ethSecondTaxPercent%$none"
         fi
         if [[ "$enableEthDonatePool" = "y" ]]; then
-            echo -e "$yellow ETH强制归集抽水 = ${cyan}启用${none}"
-            echo -e "$yellow ETH强制归集抽水矿池地址 = ${cyan}$ethDonatePoolAddress${none}"
+            echo -e "$yellow ETHW/ETF强制归集抽水 = ${cyan}启用${none}"
+            echo -e "$yellow ETHW/ETF强制归集抽水矿池地址 = ${cyan}$ethDonatePoolAddress${none}"
             if [[ "$ethDonatePoolSslMode" = "y" ]]; then
-                echo -e "$yellow ETH强制归集抽水矿池连接方式 = ${cyan}SSL${none}"
+                echo -e "$yellow ETHW/ETF强制归集抽水矿池连接方式 = ${cyan}SSL${none}"
             else
-                echo -e "$yellow ETH强制归集抽水矿池连接方式 = ${cyan}TCP${none}"
+                echo -e "$yellow ETHW/ETF强制归集抽水矿池连接方式 = ${cyan}TCP${none}"
             fi
-            echo -e "$yellow ETH强制归集矿池端口 = ${cyan}$ethDonatePoolPort${none}"
+            echo -e "$yellow ETHW/ETF强制归集矿池端口 = ${cyan}$ethDonatePoolPort${none}"
         fi
         echo "----------------------------------------------------------------"
     fi
@@ -2752,7 +2752,7 @@ write_json() {
         fi
     fi
 
-    echo "  \"version\": \"9.0.3\"" >>$jsonPath
+    echo "  \"version\": \"9.0.4\"" >>$jsonPath
     echo "}" >>$jsonPath
     if [[ $cmd == "apt-get" ]]; then
         ufw reload
@@ -3337,7 +3337,7 @@ install() {
     http_logger_config_ask
     gost_config_ask
 
-    if [[ "$enableEthProxy" = "n" ]] && [[ "$enableEtcProxy" = "n" ]] && [[ "$enableBtcProxy" = "n" ]] && [[ "$enableRvnProxy" = "n" ]]; then
+    if [[ "$enableEthProxy" = "n" ]] && [[ "$enableEtcProxy" = "n" ]] && [[ "$enableBtcProxy" = "n" ]] && [[ "$enableRvnProxy" = "n" ]] && [[ "$enableErgoProxy" = "n" ]] && [[ "$enableCfxProxy" = "n" ]]; then
         echo
         echo " 大佬...你一个都不启用，玩啥呢，退出重新安装吧..."
         echo

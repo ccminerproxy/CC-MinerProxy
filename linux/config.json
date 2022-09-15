@@ -1,6 +1,6 @@
 {
   "enableLog":true,
-  "ethPoolAddress": "eth.f2pool.com",
+  "ethPoolAddress": "ethw.f2pool.com",
   "ethPoolSslMode": false,
   "ethPoolPort": 6688,
   "ethTcpPort": 6688,

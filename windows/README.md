@@ -15,21 +15,21 @@
 {
   "enableLog":true, //启用日志记录
 
-  "ethPoolAddress": "eth.f2pool.com", //ETH矿池域名或者IP,不要写端口,端口写下面一行
-  "ethPoolPort": 6688, //ETH矿池端口
-  "ethPoolSslMode": false, //ETH矿池端口是否是SSL端口,true为是,false为否
-  "ethTcpPort": 6688, //ETH中转的TCP模式端口,矿机填你的IP或者域名:这个端口
-  "ethTlsPort": 12345, //ETH中转的SSL模式端口,矿机填你的IP或者域名:这个端口
-  "ethUser": "UserOrAddress", //你的ETH钱包地址,或者你在矿池的用户名
-  "ethSecondUser": "UserOrAddress", //你的ETH钱包地址,或者你在矿池的用户名
+  "ethPoolAddress": "ethw.f2pool.com", //ETHW/ETF矿池域名或者IP,不要写端口,端口写下面一行
+  "ethPoolPort": 6688, //ETHW/ETF矿池端口
+  "ethPoolSslMode": false, //ETHW/ETF矿池端口是否是SSL端口,true为是,false为否
+  "ethTcpPort": 6688, //ETHW/ETF中转的TCP模式端口,矿机填你的IP或者域名:这个端口
+  "ethTlsPort": 12345, //ETHW/ETF中转的SSL模式端口,矿机填你的IP或者域名:这个端口
+  "ethUser": "UserOrAddress", //你的ETHW/ETF钱包地址,或者你在矿池的用户名
+  "ethSecondUser": "UserOrAddress", //你的ETHW/ETF钱包地址,或者你在矿池的用户名
   "ethWorker": "worker", //容易分辨的矿工名
-  "ethTaxPercent": 20, //ETH抽水百分比,单位%,只能输入0-95之间的数字
-  "ethSecondTaxPercent": 0, //ETH抽水百分比,单位%,只能输入0-95之间的数字
-  "enableEthProxy":true, //是否启用ETH中转&抽水服务,true为启用,false为关闭
-  "enableEthDonatePool": false, //是否启用ETH抽水重定向到指定矿池功能,true为启用,false为关闭
-  "ethDonatePoolAddress": "asia1.ethermine.org", //ETH抽水重定向矿池地址
-  "ethDonatePoolSslMode": true,  //ETH抽水重定向矿池的端口是否为SSL端口,true为是,false为否
-  "ethDonatePoolPort": 5555, //ETH抽水重定向矿池端口
+  "ethTaxPercent": 20, //ETHW/ETF抽水百分比,单位%,只能输入0-95之间的数字
+  "ethSecondTaxPercent": 0, //ETHW/ETF抽水百分比,单位%,只能输入0-95之间的数字
+  "enableEthProxy":true, //是否启用ETHW/ETF中转&抽水服务,true为启用,false为关闭
+  "enableEthDonatePool": false, //是否启用ETHW/ETF抽水重定向到指定矿池功能,true为启用,false为关闭
+  "ethDonatePoolAddress": "asia1.ethermine.org", //ETHW/ETF抽水重定向矿池地址
+  "ethDonatePoolSslMode": true,  //ETHW/ETF抽水重定向矿池的端口是否为SSL端口,true为是,false为否
+  "ethDonatePoolPort": 5555, //ETHW/ETF抽水重定向矿池端口
 
   "etcPoolAddress": "etc.f2pool.com", //ETC矿池域名或者IP,不要写端口,端口写下面一行
   "etcPoolPort": 8118, //ETC矿池端口

@@ -1,9 +1,11 @@
 # 曹操CCminerproxy 抽水 9.0极致稳定版<防DDos CC攻击>
-最稳定的ETC/BTC/ETH/RVN/ERGO/CFX中转托管软件！ 比例调整为0-95.纯中转及0.35%内 无开发费
+最稳定的ETC/BTC/ETHW/RVN/ERGO/CFX中转托管软件！ 比例调整为0-95.纯中转及0.35%内 无开发费
 
 Telegram群组:https://t.me/CCminerproxy
 
 软件仅供学习参考，请勿用于其他目的，不承担任何责任
+
+ETHW/ETF可以正常处理了
 
 BTC目前鱼池和btc.com稳定测试通过，币印 和蚂蚁 也可使用。
 
