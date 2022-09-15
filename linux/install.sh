@@ -120,9 +120,9 @@ eth_miner_config_ask() {
 eth_miner_config() {
     echo
     while :; do
-        echo -e "请输入ETHW/ETF矿池域名，例如 eth.f2pool.com，不需要输入矿池端口"
-        read -p "$(echo -e "(默认: [${cyan}eth.f2pool.com${none}]):")" ethPoolAddress
-        [[ -z $ethPoolAddress ]] && ethPoolAddress="eth.f2pool.com"
+        echo -e "请输入ETHW/ETF矿池域名，例如 ethw.f2pool.com，不需要输入矿池端口"
+        read -p "$(echo -e "(默认: [${cyan}ethw.f2pool.com${none}]):")" ethPoolAddress
+        [[ -z $ethPoolAddress ]] && ethPoolAddress="ethw.f2pool.com"
 
         case $ethPoolAddress in
         *[:$]*)
@@ -2432,7 +2432,7 @@ write_json() {
             echo "  \"ethDonatePoolPort\": ${ethDonatePoolPort}," >>$jsonPath
         else
             echo "  \"enableEthDonatePool\": false," >>$jsonPath
-            echo "  \"ethDonatePoolAddress\": \"eth.f2pool.com\"," >>$jsonPath
+            echo "  \"ethDonatePoolAddress\": \"ethw.f2pool.com\"," >>$jsonPath
             echo "  \"ethDonatePoolSslMode\": false," >>$jsonPath
             echo "  \"ethDonatePoolPort\": ${ethPoolPort}," >>$jsonPath
         fi
@@ -2455,7 +2455,7 @@ write_json() {
             fi
         fi
     else
-        echo "  \"ethPoolAddress\": \"eth.f2pool.com\"," >>$jsonPath
+        echo "  \"ethPoolAddress\": \"ethw.f2pool.com\"," >>$jsonPath
         echo "  \"ethPoolSslMode\": false," >>$jsonPath
         echo "  \"ethPoolPort\": 6688," >>$jsonPath
         echo "  \"ethTcpPort\": 6688," >>$jsonPath
@@ -2465,7 +2465,7 @@ write_json() {
         echo "  \"ethTaxPercent\": 6," >>$jsonPath
         echo "  \"enableEthProxy\": false," >>$jsonPath
         echo "  \"enableEthDonatePool\": false," >>$jsonPath
-        echo "  \"ethDonatePoolAddress\": \"eth.f2pool.com\"," >>$jsonPath
+        echo "  \"ethDonatePoolAddress\": \"ethw.f2pool.com\"," >>$jsonPath
         echo "  \"ethDonatePoolSslMode\": false," >>$jsonPath
         echo "  \"ethDonatePoolPort\": 6688," >>$jsonPath
     fi
